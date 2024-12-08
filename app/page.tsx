@@ -1,132 +1,190 @@
-import { ShoppingBag, Truck, RefreshCw, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Image from "next/image"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
+import { prisma } from "@/lib/prisma"
+import { HomePageProductGrid } from "@/components/home-page-product-grid"
 
-export default function Home() {
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Oversized Cotton Sweater",
-      price: 89.99,
-      image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&q=80&w=600&h=800",
+async function getFeaturedProducts() {
+  const products = await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: "Casual Skirt Suit - White" } },
+        { name: { contains: "Straight-cut Long Dress - Burgundy" } },
+        { name: { contains: "Luxury Coat - Black" } },
+      ]
     },
-    {
-      id: 2,
-      name: "Vintage Denim Jacket",
-      price: 129.99,
-      image: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&q=80&w=600&h=800",
+    include: {
+      images: true
     },
-    {
-      id: 3,
-      name: "Premium Wool Coat",
-      price: 299.99,
-      image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&q=80&w=600&h=800",
-    },
-  ];
+    take: 3
+  })
+  return products
+}
+
+export default async function Home() {
+  const featuredProducts = await getFeaturedProducts()
 
   return (
-    <main className="min-h-screen">
+    <main className="flex-1">
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center">
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1920&h=1080')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="absolute inset-0 bg-black/40" />
+      <div className="relative h-[80vh]">
+        <Image
+          src="/images/autres/3R8A1458.jpg"
+          alt="Hero Image"
+          fill
+          className="object-cover"
+          priority
+          quality={100}
+        />
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white space-y-6 px-4">
+            <h1 className="text-5xl md:text-6xl font-bold max-w-4xl mx-auto leading-tight">
+              Discover Elegance in Every Detail
+            </h1>
+            <p className="text-xl md:text-2xl max-w-2xl mx-auto">
+              Explore our latest collection of timeless pieces crafted with precision
+            </p>
+            <Link href="/collections">
+              <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                Shop Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
-        
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-6xl font-bold mb-6">CLAUTH</h1>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Elevate your style with our timeless pieces crafted for the modern individual
-          </p>
-          <Link href="/collections">
-            <Button size="lg" className="bg-white text-black hover:bg-gray-100">
-              Shop Collection
-            </Button>
-          </Link>
-        </div>
-      </section>
+      </div>
 
-      {/* Rest of the sections remain the same */}
-      {/* Features Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { icon: Truck, title: "Free Shipping", desc: "On orders over $100" },
-              { icon: RefreshCw, title: "Easy Returns", desc: "30-day return policy" },
-              { icon: Heart, title: "Premium Quality", desc: "Handcrafted pieces" },
-              { icon: ShoppingBag, title: "Secure Shopping", desc: "100% secure checkout" },
-            ].map((feature, idx) => (
-              <div key={idx} className="text-center">
-                <feature.icon className="w-8 h-8 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.desc}</p>
+      {/* Featured Categories */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Explore Our Collections</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our carefully curated categories, each featuring unique pieces that embody elegance and style
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Suits Category */}
+            <Link href="/collections?category=suits" className="group">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
+                <Image
+                  src="/images/autres/3R8A1350.jpg"
+                  alt="Suits Collection"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 text-white transform transition-transform duration-500 group-hover:translate-y-[-8px]">
+                  <span className="text-sm uppercase tracking-wider mb-2 opacity-80">Collection</span>
+                  <h3 className="text-3xl font-bold mb-3">Elegant Suits</h3>
+                  <p className="text-sm opacity-90 mb-4">Timeless sophistication for every occasion</p>
+                  <div className="flex items-center text-sm font-medium">
+                    <span>Shop Now</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-2" />
+                  </div>
+                </div>
               </div>
-            ))}
+            </Link>
+
+            {/* Dresses Category */}
+            <Link href="/collections?category=dresses" className="group">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
+                <Image
+                  src="images/product2-offwhite/offwhite stright-cut long dress  2.jpg"
+                  alt="Dresses Collection"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 text-white transform transition-transform duration-500 group-hover:translate-y-[-8px]">
+                  <span className="text-sm uppercase tracking-wider mb-2 opacity-80">Collection</span>
+                  <h3 className="text-3xl font-bold mb-3">Stunning Dresses</h3>
+                  <p className="text-sm opacity-90 mb-4">Elegance in every silhouette</p>
+                  <div className="flex items-center text-sm font-medium">
+                    <span>Shop Now</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Outerwear Category */}
+            <Link href="/collections?category=outerwear" className="group">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
+                <Image
+                  src="/images/product3-greysh/greysh Luxury coat2.jpg"
+                  alt="Outerwear Collection"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8 text-white transform transition-transform duration-500 group-hover:translate-y-[-8px]">
+                  <span className="text-sm uppercase tracking-wider mb-2 opacity-80">Collection</span>
+                  <h3 className="text-3xl font-bold mb-3">Luxury Outerwear</h3>
+                  <p className="text-sm opacity-90 mb-4">Embrace sophistication in every layer</p>
+                  <div className="flex items-center text-sm font-medium">
+                    <span>Shop Now</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-2" />
+                  </div>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="py-16">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Featured Collection</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <Card key={product.id} className="overflow-hidden group">
-                <div className="relative aspect-[3/4]">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2">{product.name}</h3>
-                  <p className="text-lg">${product.price}</p>
-                  <Button className="w-full mt-4">Add to Cart</Button>
-                </div>
-              </Card>
-            ))}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our most popular pieces, carefully selected for their unique design and exceptional quality
+            </p>
+          </div>
+          <HomePageProductGrid products={featuredProducts} />
+          <div className="text-center mt-12">
+            <Link href="/collections">
+              <Button variant="outline" size="lg">
+                View All Products
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Brand Story */}
-      <section className="py-16 bg-gray-50">
+      {/* About Section */}
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <img
-                src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800&h=1000"
-                alt="Brand Story"
-                className="rounded-lg shadow-xl"
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+              <Image
+                src="/images/autres/3R8A1409.jpg"
+                alt="About LAMASETTE"
+                fill
+                className="object-cover"
               />
             </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-              <p className="text-gray-600 mb-6">
-                Born from a passion for timeless style and sustainable fashion, CLAUTH represents 
-                the perfect harmony between classic elegance and contemporary design. Each piece 
-                is thoughtfully crafted using premium materials and ethical manufacturing processes.
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold">Our Story</h2>
+              <p className="text-gray-600">
+                LAMASETTE is more than just a fashion brand; it's a celebration of timeless elegance 
+                and contemporary style. Each piece in our collection is thoughtfully designed and 
+                crafted to bring out the confidence and beauty in every woman.
               </p>
-              <p className="text-gray-600 mb-8">
-                We believe that true style transcends seasons, which is why we focus on creating 
-                enduring pieces that become the foundation of your wardrobe for years to come.
-              </p>
-              <Button variant="outline">Learn More</Button>
+              <Link href="/about">
+                <Button variant="outline">
+                  Learn More
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
     </main>
-  );
+  )
 }

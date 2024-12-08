@@ -5,157 +5,271 @@ import { Product } from "@/lib/types"
 import { Card, Badge, Button } from "@/components/ui"
 import { ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useCart } from "@/lib/context/cart-context"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
+import { useCart } from "@/lib/context/cart-context"
 
 const colorMap: { [key: string]: string } = {
-  White: "bg-white",
+  White: "bg-white border border-gray-200",
   Black: "bg-black",
-  Gray: "bg-gray-400",
-  Navy: "bg-navy-800",
-  Brown: "bg-amber-800",
-  Beige: "bg-amber-100",
-  Blue: "bg-blue-600",
-  Red: "bg-red-600",
-  Camel: "bg-amber-200",
-  Cream: "bg-amber-50",
-  Tan: "bg-amber-300",
-  Stripe: "bg-gradient-to-r from-blue-500 to-blue-600",
-  Blush: "bg-pink-200",
-  Green: "bg-green-600",
+  Chocolate: "bg-[#4a3728]",
+  Caramel: "bg-[#c68e17]",
+  "Mint Green": "bg-[#98ff98]",
+  Burgundy: "bg-[#800020]",
+  Green: "bg-[#355e3b]",
+  "Off White": "bg-[#faf9f6] border border-gray-200",
+  Greyish: "bg-[#808080]",
+  "Sky Blue": "bg-[#87ceeb]",
+  Pink: "bg-[#ffc0cb]",
+  Blue: "bg-[#0000ff]",
   Floral: "bg-gradient-to-r from-pink-300 to-purple-300"
 };
 
-export function ProductGrid() {
+interface ProductWithImages extends Product {
+  images: {
+    id: number;
+    url: string;
+    isMain: boolean;
+  }[];
+}
+
+interface ProductGridProps {
+  filters: {
+    category: string;
+    size: string;
+    color: string;
+    sort: string;
+    product: string;
+  };
+}
+
+export function ProductGrid({ filters }: ProductGridProps) {
   const router = useRouter()
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductWithImages[] | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: string }>({})
   const [selectedColors, setSelectedColors] = useState<{ [key: string]: string }>({})
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({})
   const { addItem } = useCart()
+
+  // Convert USD to TND (Tunisian Dinar)
+  const convertToTND = (usdPrice: number) => {
+    const exchangeRate = 3.13; // 1 USD = 3.13 TND (approximate)
+    return (usdPrice * exchangeRate).toFixed(2);
+  };
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('/api/products');
+        const params = new URLSearchParams();
+        if (filters.category !== 'all') params.append('category', filters.category);
+        if (filters.size !== 'all') params.append('size', filters.size);
+        if (filters.color !== 'all') params.append('color', filters.color);
+        if (filters.sort !== 'featured') params.append('sort', filters.sort);
+        if (filters.product) params.append('product', filters.product);
+
+        const response = await fetch('/api/products?' + params.toString());
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
         const data = await response.json();
         setProducts(data);
+
+        const initialSelectedImages: { [key: string]: string } = {};
+        data.forEach((product: ProductWithImages) => {
+          const mainImage = product.images.find(img => img.isMain)?.url || product.images[0].url;
+          initialSelectedImages[product.id] = mainImage;
+        });
+        setSelectedImage(initialSelectedImages);
       } catch (error) {
         console.error('Error fetching products:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch products');
       } finally {
         setLoading(false);
       }
     }
 
     fetchProducts();
-  }, []);
+  }, [filters]);
 
-  const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id];
-    const selectedColor = selectedColors[product.id];
-    
-    if (!selectedSize || !selectedColor) {
-      alert("Please select both size and color");
+  const handleAddToCart = (product: Product & { images: { id: number; url: string; isMain: boolean; }[] }) => {
+    if (!selectedColors[product.id] || !selectedSizes[product.id]) {
+      // You might want to show a toast or alert here
       return;
     }
     
-    addItem(product, selectedSize, selectedColor);
+    addItem(
+      product,
+      selectedSizes[product.id],
+      selectedColors[product.id]
+    );
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="animate-pulse">
+            <div className="bg-gray-200 aspect-[2/3] rounded-lg mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 mb-4">{error}</p>
+        <Button onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  if (!products || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 mb-4">No products found</p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
-        <Card key={product.id} className="overflow-hidden group">
-          <div 
-            className="cursor-pointer"
-            onClick={() => router.push(`/product/${product.id}`)}
-          >
-            <div className="relative aspect-square">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-              />
-              {(product.salePrice ?? product.price) < product.price && (
-                <Badge className="absolute top-2 right-2 bg-red-500">
-                  SALE
-                </Badge>
-              )}
-            </div>
+        <div
+          key={product.id}
+          className="group relative"
+          onMouseEnter={() => setHoveredProduct(product.id.toString())}
+          onMouseLeave={() => setHoveredProduct(null)}
+        >
+          {/* Main Product Image */}
+          <div className="relative aspect-[2/3] mb-3 overflow-hidden rounded-lg bg-gray-100">
+            <Image
+              src={selectedImage[product.id] || product.images[0].url}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={product.images[0].isMain}
+              loading={product.images[0].isMain ? "eager" : "lazy"}
+              quality={80}
+            />
             
-            <div className="p-4">
-              <h3 className="font-semibold mb-2 hover:text-primary">
-                {product.name}
-              </h3>
-              <div className="flex items-center gap-2 mb-4">
-                <span className={cn(
-                  "text-lg font-medium",
-                  (product.salePrice ?? product.price) < product.price && "line-through text-gray-400"
-                )}>
-                  ${product.price}
-                </span>
-                {(product.salePrice ?? 0) < product.price && (
-                  <span className="text-lg font-medium text-red-500">
-                    ${product.salePrice}
-                  </span>
-                )}
+            {/* Sale Badge */}
+            {product.salePrice && (
+              <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs rounded">
+                Sale
               </div>
-            </div>
+            )}
+
+            {/* Thumbnail Images */}
+            {hoveredProduct === product.id.toString() && product.images.length > 1 && (
+              <div className="absolute bottom-2 left-2 right-2 flex justify-center gap-1.5 bg-white/80 p-1.5 rounded-lg transition-opacity duration-200">
+                {product.images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    className={`relative w-8 h-8 rounded-md overflow-hidden border-2 transition-all
+                      ${selectedImage[product.id] === image.url 
+                        ? 'border-black' 
+                        : 'border-transparent hover:border-gray-300'}`}
+                    onMouseEnter={() => setSelectedImage({ 
+                      ...selectedImage, 
+                      [product.id]: image.url 
+                    })}
+                  >
+                    <Image
+                      src={image.url}
+                      alt={`${product.name} view ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="32px"
+                      loading="lazy"
+                      quality={60}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="p-4 pt-0" onClick={(e) => e.stopPropagation()}>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {product.sizes.map((size) => (
-                <Badge 
-                  key={size} 
-                  variant={selectedSizes[product.id] === size ? "default" : "outline"} 
-                  className={cn(
-                    "text-xs cursor-pointer",
-                    selectedSizes[product.id] === size && "bg-primary"
-                  )}
-                  onClick={() => setSelectedSizes({
-                    ...selectedSizes,
-                    [product.id]: size
-                  })}
-                >
-                  {size}
-                </Badge>
-              ))}
+          {/* Product Info */}
+          <div className="space-y-2">
+            <h3 className="font-medium text-sm text-gray-700 truncate">{product.name}</h3>
+            <div className="flex items-center space-x-2">
+              {product.salePrice ? (
+                <>
+                  <p className="text-sm font-medium text-gray-900">
+                    {convertToTND(product.salePrice)} DT
+                  </p>
+                  <p className="text-sm text-gray-500 line-through">
+                    {convertToTND(product.price)} DT
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm font-medium text-gray-900">
+                  {convertToTND(product.price)} DT
+                </p>
+              )}
             </div>
-            <div className="flex flex-wrap gap-2 mb-4">
+
+            {/* Color Options */}
+            <div className="flex flex-wrap gap-1.5 mt-2">
               {product.colors.map((color) => (
-                <div
+                <button
                   key={color}
+                  onClick={() => setSelectedColors({ 
+                    ...selectedColors, 
+                    [product.id]: color 
+                  })}
                   className={cn(
-                    "w-6 h-6 rounded-full border border-gray-200 cursor-pointer",
-                    colorMap[color],
-                    color === "White" ? "border-gray-300" : "",
-                    selectedColors[product.id] === color && "ring-2 ring-primary ring-offset-2"
+                    "w-5 h-5 rounded-full transition-all",
+                    colorMap[color] || "bg-gray-200",
+                    selectedColors[product.id] === color && "ring-1 ring-offset-1 ring-black",
                   )}
                   title={color}
-                  onClick={() => setSelectedColors({
-                    ...selectedColors,
-                    [product.id]: color
-                  })}
                 />
               ))}
             </div>
-            <Button 
-              className="w-full gap-2"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleAddToCart(product)
-              }}
+
+            {/* Size Options */}
+            <div className="flex flex-wrap gap-1.5">
+              {product.sizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSizes({ 
+                    ...selectedSizes, 
+                    [product.id]: size 
+                  })}
+                  className={cn(
+                    "px-2 py-1 text-xs border rounded transition-all",
+                    selectedSizes[product.id] === size
+                      ? "border-black bg-black text-white"
+                      : "border-gray-200 hover:border-gray-300"
+                  )}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Add to Cart Button */}
+            <Button
+              onClick={() => handleAddToCart(product)}
+              className="w-full mt-3 bg-black hover:bg-gray-800 h-9 text-sm"
+              size="sm"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-4 h-4 mr-2" />
               Add to Cart
             </Button>
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );

@@ -12,7 +12,7 @@ import { Footer } from "@/components/footer";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CLAUTH - Timeless Fashion for the Modern Individual',
+  title: 'LAMASETTE - Timeless Fashion for the Modern Individual',
   description: 'Discover our collection of premium, sustainable clothing crafted for the modern wardrobe.',
 };
 

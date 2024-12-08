@@ -2,8 +2,6 @@
 
 import { createContext, useContext, useState } from "react";
 import { Product } from "@/lib/types";
-import { Navbar } from "@/components/navbar";
-
 interface CartItem extends Product {
   quantity: number;
   selectedSize?: string;

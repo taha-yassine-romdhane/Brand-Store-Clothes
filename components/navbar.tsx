@@ -6,40 +6,114 @@ import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/context/cart-context";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
+const collectionCategories = [
+  {
+    label: "Suits",
+    subcategories: [
+      { name: "Casual Skirt Suit", query: "casual-skirt-suit" },
+      { name: "Business Formal Outfit", query: "business-formal-outfit" }
+    ]
+  },
+  {
+    label: "Dresses",
+    subcategories: [
+      { name: "Straight-cut Long Dress", query: "straight-cut-long-dress" }
+    ]
+  },
+  {
+    label: "Outerwear",
+    subcategories: [
+      { name: "Luxury Coat", query: "luxury-coat" },
+      { name: "Short Sporty Coat", query: "short-sporty-coat" }
+    ]
+  },
+  {
+    label: "Accessories",
+    subcategories: [
+      { name: "Neck Cover", query: "neck-cover" }
+    ]
+  }
+];
 
 const Navbar = () => {
   const { items } = useCart();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const routes = [
-
     {
       href: "/collections",
       label: "Collections",
+      dropdown: true
+    },
+    {
+      href: "/collaborations",
+      label: "Collaborations"
+    },
+    {
+      href: "/ramadhane-collections",
+      label: "RAMADHANE Collections",
     },
     {
       href: "/about",
-      label: "About",
-    },
+      label: "About"
+    }
   ];
+
+  const handleProductClick = (category: string, productQuery: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("category", category.toLowerCase());
+    params.set("product", productQuery);
+    router.push(`/collections?${params.toString()}`);
+  };
 
   return (
     <div className="border-b">
       <Container>
         <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
           <Link href="/" className="ml-4 flex lg:ml-0 gap-x-2">
-            <p className="font-bold text-xl">CLAUTH</p>
+            <p className="font-bold text-xl">LAMASETTE</p>
           </Link>
 
           <div className="flex items-center gap-x-4">
             <div className="hidden lg:flex items-center gap-x-4">
               {routes.map((route) => (
-                <Link
-                  key={route.href}
-                  href={route.href}
-                  className="text-sm font-medium transition-colors"
-                >
-                  {route.label}
-                </Link>
+                <div key={route.href} className="relative group">
+                  <Link
+                    href={route.href}
+                    className={`text-sm font-medium transition-colors hover:text-black py-2 relative ${
+                      route.dropdown ? 'group-hover:after:content-[""] group-hover:after:absolute group-hover:after:bottom-0 group-hover:after:left-0 group-hover:after:w-full group-hover:after:h-0.5 group-hover:after:bg-black' : ''
+                    }`}
+                  >
+                    {route.label}
+                  </Link>
+                  
+                  {route.dropdown && (
+                    <div className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[800px] bg-white shadow-lg rounded-lg py-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-4 before:h-4 before:bg-white before:transform before:rotate-45 before:-translate-y-2">
+                      <div className="flex justify-around relative bg-white rounded-lg">
+                        {collectionCategories.map((category) => (
+                          <div key={category.label} className="px-6">
+                            <h3 className="font-medium text-sm mb-4 text-black">{category.label}</h3>
+                            <div className="space-y-2">
+                              {category.subcategories.map((product) => (
+                                <button
+                                  key={product.name}
+                                  onClick={() => handleProductClick(category.label, product.query)}
+                                  className="block text-sm text-gray-600 hover:text-black transition-colors w-full text-left"
+                                >
+                                  {product.name}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -71,4 +145,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

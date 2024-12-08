@@ -14,14 +14,27 @@ datasource db {
 }
 
 model Product {
+  id          Int           @id @default(autoincrement())
+  name        String
+  price       Float
+  salePrice   Float?        // Made optional since not all products might be on sale
+  images      ProductImage[] // Relation to product images
+  sizes       String[]
+  colors      String[]
+  category    String
+  description String?       // Added description field
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model ProductImage {
   id        Int      @id @default(autoincrement())
-  name      String
-  price     Float
-  salePrice Float
-  image     String
-  sizes     String[]
-  colors    String[]
-  category  String
+  url       String   // Path to the image in public folder
+  isMain    Boolean  @default(false) // Indicates if this is the main product image
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([productId])
 }

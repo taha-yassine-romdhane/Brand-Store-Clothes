@@ -1,123 +1,279 @@
-import { prisma } from '../lib/db'
-
-const products = [
-  {
-    id: 1,
-    name: "Classic White Tee",
-    price: 49.99,
-    salePrice: 39.99,
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=600",
-    sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["White", "Black", "Gray"],
-    category: "Tops"
-  },
-  {
-    id: 2,
-    name: "Comfy Crewneck Sweatshirt",
-    price: 59.99,
-    salePrice: 49.99,
-    image: "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=600",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Gray", "Black", "Navy"],
-    category: "Tops"
-  },
-  {
-    id: 3,
-    name: "Slim Fit Chinos",
-    price: 69.99,
-    salePrice: 25.26,
-    image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&q=80&w=600",
-    sizes: ["30", "32", "34", "36", "38"],
-    colors: ["Khaki", "Black", "Olive"],
-    category: "Bottoms"
-  },
-  {
-    id: 4,
-    name: "Denim Jacket",
-    price: 89.99,
-    salePrice: 79.99,
-    image: "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?auto=format&fit=crop&q=80&w=600",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Blue", "Black"],
-    category: "Outerwear"
-  },
-  {
-    id: 5,
-    name: "Running Shoes",
-    price: 120.00,
-    salePrice: 99.99,
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=600",
-    sizes: ["8", "9", "10", "11", "12"],
-    colors: ["White", "Black", "Red"],
-    category: "Footwear"
-  },
-  {
-    id: 6,
-    name: "Graphic Print T-Shirt",
-    price: 29.99,
-    salePrice: 19.99,
-    image: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&q=80&w=600",
-    sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["Black", "White", "Blue"],
-    category: "Tops"
-  },
-  {
-    id: 7,
-    name: "Leather Belt",
-    price: 39.99,
-    salePrice: 29.95,
-    image: "https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&q=80&w=600",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Brown", "Black"],
-    category: "Accessories"
-  },
-  {
-    id: 8,
-    name: "Puffer Vest",
-    price: 79.99,
-    salePrice: 69.99,
-    image: "https://images.unsplash.com/photo-1557418669-db3f781a58c0?auto=format&fit=crop&q=80&w=600",
-    sizes: ["M", "L", "XL"],
-    colors: ["Black", "Navy", "Olive"],
-    category: "Outerwear"
-  },
-  {
-    id: 9,
-    name: "Casual Sneakers",
-    price: 89.99,
-    salePrice: 74.99,
-    image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&q=80&w=600",
-    sizes: ["7", "8", "9", "10", "11"],
-    colors: ["White", "Gray", "Beige"],
-    category: "Footwear"
-  },
-  {
-    id: 10,
-    name: "Wool Beanie",
-    price: 24.99,
-    salePrice: 19.99,
-    image: "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?auto=format&fit=crop&q=80&w=600",
-    sizes: ["One Size"],
-    colors: ["Gray", "Black", "Burgundy"],
-    category: "Accessories"
-  }
-]
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Start seeding...')
-  
-  // Clear existing products
-  await prisma.product.deleteMany()
-  
-  // Create new products
-  for (const product of products) {
-    const createdProduct = await prisma.product.create({
-      data: product
+  // First, clean up existing data
+  await prisma.productImage.deleteMany({})
+  await prisma.product.deleteMany({})
+
+  // Product 1 - Casual Skirt Suit (Multiple Colors)
+  const product1Colors = [
+    { 
+      name: 'Chocolate', 
+      dir: 'Product1-chocolate', 
+      images: [
+        'chocolate casual skirt suit 1.jpg',
+        'chocolate casual skirt suit 2.jpg',
+        'chocolate casual skirt suit 3.jpg',
+        'chocolate casual skirt suit 4.jpg'
+      ]
+    },
+    { 
+      name: 'White', 
+      dir: 'Product1-white', 
+      images: [
+        'white casual skirt suit 1.jpg',
+        'white casual skirt suit 2.jpg',
+        'white casual skirt suit 3.jpg',
+        'white casual skirt suit4 .jpg',
+        'white casual skirt suit 5.jpg'
+      ]
+    },
+    { 
+      name: 'Caramel', 
+      dir: 'product1-caramel', 
+      images: [
+        'Caramel casual skirt suit 1.jpg',
+        'Caramel casual skirt suit 2.jpg',
+        'Caramel casual skirt suit 3.jpg',
+        'Caramel casual skirt suit 4.jpg'
+      ]
+    },
+    { 
+      name: 'Mint Green', 
+      dir: 'product1-mintgreen', 
+      images: [
+        'mintgreen casual skirt suit 1.jpg',
+        'mintgreen casual skirt suit 2.jpg',
+        'mintgreen casual skirt suit 3.jpg'
+      ]
+    }
+  ]
+
+  for (const color of product1Colors) {
+    const product = await prisma.product.create({
+      data: {
+        name: `Casual Skirt Suit - ${color.name}`,
+        description: 'Elegant casual skirt suit perfect for any occasion. Features a tailored blazer and matching skirt.',
+        price: 129.99,
+        category: 'Suits',
+        colors: [color.name],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      },
     })
-    console.log(`Created product with id: ${createdProduct.id}`)
+
+    // Add images for each color variant
+    for (const image of color.images) {
+      await prisma.productImage.create({
+        data: {
+          url: `/images/${color.dir}/${image}`,
+          isMain: image.includes('1.jpg'),
+          productId: product.id,
+        },
+      })
+    }
   }
-  
-  console.log('Seeding finished.')
+
+  // Product 2 - Straight-cut Long Dress (Multiple Colors)
+  const product2Colors = [
+    { 
+      name: 'Caramel', 
+      dir: 'product2-Caramel', 
+      images: [
+        'Caramel stright-cut long dress 1 .jpg',
+        'Caramel stright-cut long dress 2.jpg',
+        'Caramel stright-cut long dress 3.jpg'
+      ]
+    },
+    { 
+      name: 'Burgundy', 
+      dir: 'product2-burgandi', 
+      images: [
+        'burgendi stright-cut long dress 1.jpg',
+        'burgendi stright-cut long dress 2.jpg',
+        'burgendi stright-cut long dress 3.jpg'
+      ]
+    },
+    { 
+      name: 'Green', 
+      dir: 'product2-green', 
+      images: [
+        'green stright-cut long dress 1 .jpg',
+        'green stright-cut long dress 2.jpg'
+      ]
+    },
+    { 
+      name: 'Off White', 
+      dir: 'product2-offwhite', 
+      images: [
+        'offwhite stright-cut long dress 1.jpg',
+        'offwhite stright-cut long dress  2.jpg',
+        'offwhite stright-cut long dress  3.jpg'
+      ]
+    }
+  ]
+
+  for (const color of product2Colors) {
+    const product = await prisma.product.create({
+      data: {
+        name: `Straight-cut Long Dress - ${color.name}`,
+        description: 'Elegant straight-cut long dress perfect for formal occasions. Features a sleek design and premium fabric.',
+        price: 159.99,
+        category: 'Dresses',
+        colors: [color.name],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      },
+    })
+
+    for (const image of color.images) {
+      await prisma.productImage.create({
+        data: {
+          url: `/images/${color.dir}/${image}`,
+          isMain: image.includes('1'),
+          productId: product.id,
+        },
+      })
+    }
+  }
+
+  // Product 3 - Luxury Coat (Multiple Colors)
+  const product3Colors = [
+    { 
+      name: 'Greyish', 
+      dir: 'product3-greysh', 
+      images: [
+        'greysh Luxury coat1.jpg',
+        'greysh Luxury coat2.jpg'
+      ]
+    },
+    { 
+      name: 'White', 
+      dir: 'product3-white', 
+      images: [
+        'white Luxury coat 1.jpg',
+        'white Luxury coat 2.jpg',
+        'white Luxury coat 3.jpg',
+        'white Luxury coat 4.jpg'
+      ]
+    }
+  ]
+
+  for (const color of product3Colors) {
+    const product = await prisma.product.create({
+      data: {
+        name: `Luxury Coat - ${color.name}`,
+        description: 'Premium luxury coat made with the finest materials. Perfect for making a statement.',
+        price: 299.99,
+        category: 'Outerwear',
+        colors: [color.name],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      },
+    })
+
+    for (const image of color.images) {
+      await prisma.productImage.create({
+        data: {
+          url: `/images/${color.dir}/${image}`,
+          isMain: image.includes('1'),
+          productId: product.id,
+        },
+      })
+    }
+  }
+
+  // Product 4 - Business Formal Outfit
+  const product4 = await prisma.product.create({
+    data: {
+      name: 'Business Formal Outfit',
+      description: 'Professional business formal outfit perfect for the modern workplace.',
+      price: 189.99,
+      category: 'Suits',
+      colors: ['Black'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    },
+  })
+
+  const product4Images = [
+    'Business formal outfit 1.jpg',
+    'Business formal outfit  2.jpg',
+    'Business formal outfit  3.jpg',
+    'Business formal outfit 4 .jpg'
+  ]
+
+  for (const image of product4Images) {
+    await prisma.productImage.create({
+      data: {
+        url: `/images/product4/${image}`,
+        isMain: image.includes('1'),
+        productId: product4.id,
+      },
+    })
+  }
+
+  // Product 5 - Short Sporty Coat (Multiple Colors)
+  const product5Colors = [
+    { 
+      name: 'Pink', 
+      images: ['Pink short sporty coat1.jpg']
+    },
+    { 
+      name: 'Greyish', 
+      images: [
+        'greysh short sporty coat1 .jpg',
+        'greysh short sporty coat2.jpg',
+        'greysh short sporty coat3 .jpg'
+      ]
+    },
+    { 
+      name: 'Sky Blue', 
+      images: ['skybleu short sporty coat 1.jpg']
+    }
+  ]
+
+  for (const color of product5Colors) {
+    const product = await prisma.product.create({
+      data: {
+        name: `Short Sporty Coat - ${color.name}`,
+        description: 'Stylish and comfortable short sporty coat, perfect for casual outings.',
+        price: 149.99,
+        category: 'Outerwear',
+        colors: [color.name],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      },
+    })
+
+    for (const image of color.images) {
+      await prisma.productImage.create({
+        data: {
+          url: `/images/product5/${image}`,
+          isMain: true,
+          productId: product.id,
+        },
+      })
+    }
+  }
+
+  // Accessories - Neck Cover
+  const accessory = await prisma.product.create({
+    data: {
+      name: 'Elegant Neck Cover - Blue',
+      description: 'Stylish neck cover in a beautiful blue shade. Perfect for adding elegance to any outfit.',
+      price: 29.99,
+      category: 'Accessories',
+      colors: ['Blue'],
+      sizes: ['One Size'],
+    },
+  })
+
+  await prisma.productImage.create({
+    data: {
+      url: '/images/Accessoire1/neck-cover-blue.jpg',
+      isMain: true,
+      productId: accessory.id,
+    },
+  })
+
+  console.log('Database seeded successfully!')
 }
 
 main()
@@ -127,4 +283,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
-  }) 
+  })
