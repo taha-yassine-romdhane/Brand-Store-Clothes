@@ -6,14 +6,15 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 
 export function CartIndicator() {
-  const { totalItems, totalPrice } = useCart();
+  const { totalItems } = useCart();
 
   return (
     <Button variant="ghost" className="relative">
       <ShoppingCart className="w-5 h-5" />
       {totalItems > 0 && (
         <Badge 
-          className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
+          variant="destructive"
+          className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 rounded-full"
         >
           {totalItems}
         </Badge>
