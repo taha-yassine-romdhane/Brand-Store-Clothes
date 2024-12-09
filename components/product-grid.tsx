@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Product } from "@/lib/types"
+import { Product, ProductImage } from "@prisma/client"
 import { useCart } from "@/lib/context/cart-context"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart } from "lucide-react"
@@ -79,11 +79,7 @@ const colorMap: { [key: string]: string } = {
 };
 
 interface ProductWithImages extends Product {
-  images: {
-    id: number;
-    url: string;
-    isMain: boolean;
-  }[];
+  images: ProductImage[];
 }
 
 interface ProductGridProps {
@@ -145,7 +141,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
     fetchProducts();
   }, [filters]);
 
-  const handleAddToCart = (product: Product & { images: { id: number; url: string; isMain: boolean; }[] }) => {
+  const handleAddToCart = (product: ProductWithImages) => {
     if (!selectedColors[product.id] || !selectedSizes[product.id]) {
       alert('Please select both size and color');
       return;
