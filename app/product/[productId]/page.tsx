@@ -1,33 +1,73 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Product } from "@/lib/types"
+import { Product, ProductImage } from "@prisma/client"
 import { useCart } from "@/lib/context/cart-context"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
+import { Loader2 } from "lucide-react"
+
+type ProductWithImages = Product & { images: ProductImage[] }
+
+// Color mapping for actual CSS colors
+const colorMap: { [key: string]: string } = {
+  "Black": "#000000",
+  "White": "#FFFFFF",
+  "Blue": "#0000FF",
+  "Red": "#FF0000",
+  "Green": "#008000",
+  "Yellow": "#FFFF00",
+  "Purple": "#800080",
+  "Pink": "#FFC0CB",
+  "Orange": "#FFA500",
+  "Brown": "#A52A2A",
+  "Gray": "#808080",
+  "Beige": "#F5F5DC",
+  "Navy": "#000080",
+  "Maroon": "#800000",
+  "Olive": "#808000",
+  "Teal": "#008080",
+  "Coral": "#FF7F50",
+  "Turquoise": "#40E0D0",
+  "Lavender": "#E6E6FA",
+  "Burgundy": "#800020",
+  "greysh": "#D3D3D3",
+  "skybleu": "#87CEEB",
+  "Sky Blue": "#87CEEB",
+  "Greyish": "#D3D3D3",
+}
 
 export default function ProductPage({ params }: { params: { productId: string } }) {
-  const [product, setProduct] = useState<Product | null>(null)
+  const [product, setProduct] = useState<ProductWithImages | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedSize, setSelectedSize] = useState<string>("")
   const [selectedColor, setSelectedColor] = useState<string>("")
   const { addItem } = useCart()
 
+  const convertToTND = (price: number) => {
+    return (price * 3.17).toFixed(2)
+  }
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true)
         setError(null)
+        console.log('Fetching product with ID:', params.productId)
         const response = await fetch(`/api/products/${params.productId}`)
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          const errorData = await response.json()
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
         }
         const data = await response.json()
+        console.log('Received product data:', data)
         setProduct(data)
       } catch (error) {
         console.error('Error fetching product:', error)
-        setError('Failed to load product. Please try again later.')
+        setError(error instanceof Error ? error.message : 'Failed to load product. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -55,7 +95,10 @@ export default function ProductPage({ params }: { params: { productId: string } 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
-        <div className="text-lg">Loading...</div>
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="text-lg">Loading...</span>
+        </div>
       </div>
     )
   }
@@ -68,7 +111,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
     )
   }
 
-  if (!product) {
+  if (!product || !product.images) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
         <div className="text-lg">Product not found</div>
@@ -76,37 +119,47 @@ export default function ProductPage({ params }: { params: { productId: string } 
     )
   }
 
-  // Function to get the background color for color circles
-  const getColorBackground = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      'White': 'bg-white',
-      'Black': 'bg-black',
-      'Gray': 'bg-gray-400',
-      'Navy': 'bg-navy-600',
-      'Blue': 'bg-blue-600',
-      'Red': 'bg-red-600',
-      'Green': 'bg-green-600',
-      'Yellow': 'bg-yellow-400',
-      'Purple': 'bg-purple-600',
-      'Pink': 'bg-pink-400',
-      'Brown': 'bg-amber-800',
-      'Orange': 'bg-orange-500',
-      'Khaki': 'bg-[#C3B091]',
-      'Olive': 'bg-olive-700',
-    }
-    return colorMap[color] || 'bg-gray-200'
-  }
+  const mainImage = product.images[selectedImageIndex] || product.images[0]
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Product Image */}
-        <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="object-cover w-full h-full"
-          />
+        {/* Product Images */}
+        <div className="space-y-4">
+          {/* Main Image */}
+          <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+            <Image
+              src={mainImage?.url || '/images/placeholder.jpg'}
+              alt={product.name}
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
+          
+          {/* Thumbnail Images */}
+          {product.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-2">
+              {product.images.map((image, index) => (
+                <button
+                  key={image.id}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={cn(
+                    "relative aspect-square overflow-hidden rounded-md bg-gray-100",
+                    selectedImageIndex === index && "ring-2 ring-black"
+                  )}
+                >
+                  <Image
+                    src={image.url}
+                    alt={`${product.name} - Image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Details */}
@@ -115,14 +168,21 @@ export default function ProductPage({ params }: { params: { productId: string } 
           
           <div className="flex items-center gap-4">
             <span className="text-2xl font-semibold">
-              ${product.salePrice || product.price}
+              {product.salePrice ? (
+                <>
+                  <span className="text-red-500">{convertToTND(product.salePrice)} TND</span>
+                  <span className="text-lg text-gray-500 line-through ml-2">
+                    {convertToTND(product.price)} TND
+                  </span>
+                </>
+              ) : (
+                <span>{convertToTND(product.price)} TND</span>
+              )}
             </span>
-            {product.salePrice && (
-              <span className="text-lg text-gray-500 line-through">
-                ${product.price}
-              </span>
-            )}
           </div>
+
+          {/* Description */}
+          <p className="text-gray-600">{product.description}</p>
 
           {/* Size Selector */}
           {product.sizes && product.sizes.length > 0 && (
@@ -157,18 +217,19 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={cn(
-                      "w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center",
-                      getColorBackground(color),
-                      selectedColor === color
-                        ? "ring-2 ring-offset-2 ring-black"
-                        : "hover:scale-110"
+                      "w-8 h-8 rounded-full relative transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                      selectedColor === color ? "ring-2 ring-black ring-offset-2" : ""
                     )}
+                    style={{
+                      backgroundColor: colorMap[color] || color,
+                      border: color.toLowerCase() === 'white' ? '1px solid #e5e5e5' : 'none'
+                    }}
                     title={color}
                   >
                     {selectedColor === color && (
                       <span className={cn(
-                        "text-xs",
-                        ['White', 'Yellow', 'Khaki'].includes(color) ? 'text-black' : 'text-white'
+                        "absolute inset-0 flex items-center justify-center",
+                        color.toLowerCase() === 'white' ? 'text-black' : 'text-white'
                       )}>
                         ✓
                       </span>
@@ -176,7 +237,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
                   </button>
                 ))}
               </div>
-              <span className="text-sm text-gray-500 block mt-2">
+              <span className="text-sm text-gray-500 block">
                 Selected: {selectedColor || 'None'}
               </span>
             </div>

@@ -7,20 +7,27 @@ import { HomePageProductGrid } from "@/components/home-page-product-grid"
 import type { Product, ProductImage } from "@prisma/client"
 
 async function getFeaturedProducts() {
-  const products = await prisma.product.findMany({
-    where: {
-      OR: [
-        { name: { contains: "Casual Skirt Suit - White" } },
-        { name: { contains: "Straight-cut Long Dress - Burgundy" } },
-        { name: { contains: "Luxury Coat - Black" } },
-      ]
-    },
-    include: {
-      images: true
-    },
-    take: 3
-  }) as (Product & { images: ProductImage[] })[]
-  return products
+  try {
+    const products = await prisma.product.findMany({
+      include: {
+        images: true
+      },
+      take: 3,
+      orderBy: {
+        createdAt: 'desc'  // Get the latest 3 products
+      }
+    }) as (Product & { images: ProductImage[] })[]
+    
+    console.log('Featured products fetched:', products.map(p => ({
+      id: p.id,
+      name: p.name,
+      imageUrls: p.images.map(img => img.url)
+    })))
+    return products
+  } catch (error) {
+    console.error('Error fetching featured products:', error)
+    return []
+  }
 }
 
 export default async function Home() {
@@ -145,7 +152,7 @@ export default async function Home() {
               Discover our most popular pieces, carefully selected for their unique design and exceptional quality
             </p>
           </div>
-          <HomePageProductGrid products={featuredProducts} />
+          <HomePageProductGrid initialProducts={featuredProducts} />
           <div className="text-center mt-12">
             <Link href="/collections">
               <Button variant="outline" size="lg">

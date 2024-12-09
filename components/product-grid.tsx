@@ -10,19 +10,72 @@ import { ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const colorMap: { [key: string]: string } = {
-  White: "bg-white border border-gray-200",
-  Black: "bg-black",
-  Chocolate: "bg-[#4a3728]",
-  Caramel: "bg-[#c68e17]",
-  "Mint Green": "bg-[#98ff98]",
-  Burgundy: "bg-[#800020]",
-  Green: "bg-[#355e3b]",
-  "Off White": "bg-[#faf9f6] border border-gray-200",
-  Greyish: "bg-[#808080]",
-  "Sky Blue": "bg-[#87ceeb]",
-  Pink: "bg-[#ffc0cb]",
-  Blue: "bg-[#0000ff]",
-  Floral: "bg-gradient-to-r from-pink-300 to-purple-300"
+  // Basic Colors
+  White: "#FFFFFF",
+  Black: "#000000",
+  Red: "#FF0000",
+  Blue: "#0000FF",
+  Green: "#008000",
+  Yellow: "#FFFF00",
+  Purple: "#800080",
+  Orange: "#FFA500",
+  Pink: "#FFC0CB",
+  Brown: "#A52A2A",
+  Gray: "#808080",
+  Greyish: "#9E9E9E",
+
+  // Shades and Variations
+  "Light Blue": "#ADD8E6",
+  "Dark Blue": "#00008B",
+  "Sky Blue": "#87CEEB",
+  "Navy Blue": "#000080",
+  "Royal Blue": "#4169E1",
+  
+  "Light Green": "#90EE90",
+  "Dark Green": "#006400",
+  "Mint Green": "#98FF98",
+  "Olive Green": "#556B2F",
+  "Forest Green": "#228B22",
+  
+  "Light Gray": "#D3D3D3",
+  "Dark Gray": "#A9A9A9",
+  "Charcoal": "#36454F",
+  "Silver": "#C0C0C0",
+  
+  // Special Colors
+  "Off White": "#FAF9F6",
+  "Ivory": "#FFFFF0",
+  "Beige": "#F5F5DC",
+  "Cream": "#FFFDD0",
+  "Khaki": "#C3B091",
+  
+  // Wood Tones
+  "Chocolate": "#4A3728",
+  "Caramel": "#C68E17",
+  "Walnut": "#773F1A",
+  "Oak": "#806517",
+  "Mahogany": "#C04000",
+  
+  // Wine Colors
+  "Burgundy": "#800020",
+  "Wine": "#722F37",
+  "Maroon": "#800000",
+  
+  // Metallic Colors
+  "Gold": "#FFD700",
+  "Bronze": "#CD7F32",
+  "Copper": "#B87333",
+  
+  // Pattern Indicators
+  "Floral": "url('#floral-pattern')",
+  "Striped": "url('#striped-pattern')",
+  "Checkered": "url('#checkered-pattern')",
+  "Polka Dot": "url('#polka-dot-pattern')",
+  
+  // Denim Colors
+  "Light Denim": "#6F8FAF",
+  "Medium Denim": "#4A6F8F",
+  "Dark Denim": "#25466F"
 };
 
 interface ProductWithImages extends Product {
@@ -148,7 +201,10 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           onMouseLeave={() => setHoveredProduct(null)}
         >
           {/* Main Product Image */}
-          <div className="relative aspect-[2/3] mb-3 overflow-hidden rounded-lg bg-gray-100">
+          <div 
+            className="relative aspect-[2/3] mb-3 overflow-hidden rounded-lg bg-gray-100 cursor-pointer"
+            onClick={() => router.push(`/product/${product.id}`)}
+          >
             <Image
               src={selectedImage[product.id] || product.images[0].url}
               alt={product.name}
@@ -169,7 +225,10 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
 
             {/* Thumbnail Images */}
             {hoveredProduct === product.id.toString() && product.images.length > 1 && (
-              <div className="absolute bottom-2 left-2 right-2 flex justify-center gap-1.5 bg-white/80 p-1.5 rounded-lg transition-opacity duration-200">
+              <div 
+                className="absolute bottom-2 left-2 right-2 flex justify-center gap-1.5 bg-white/80 p-1.5 rounded-lg transition-opacity duration-200"
+                onClick={(e) => e.stopPropagation()} // Prevent navigation when clicking thumbnails
+              >
                 {product.images.map((image, index) => (
                   <button
                     key={image.id}
@@ -199,80 +258,108 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
 
           {/* Product Info */}
           <div className="space-y-2">
-            <div className="mt-2 flex justify-between items-start">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">
-                  {product.name}
-                </h3>
-                {product.collaborateur && (
-                  <p className="mt-1 text-sm text-gray-500">
-                    By {product.collaborateur}
-                  </p>
-                )}
-                <p className="mt-1 text-sm text-gray-500">
-                  {product.category}
-                </p>
-              </div>
-              <p className="text-sm font-medium text-gray-900">
+            <div 
+              className="cursor-pointer"
+              onClick={() => router.push(`/product/${product.id}`)}
+            >
+              <h3 className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
+                {product.name}
+              </h3>
+              <p className="text-sm text-gray-500">{product.category}</p>
+              
+              <div className="mt-2 flex items-center gap-2">
                 {product.salePrice ? (
                   <>
-                    <span className="line-through text-gray-500 mr-2">
-                      {convertToTND(product.price)} DT
+                    <span className="text-sm font-medium text-red-600">
+                      {convertToTND(product.salePrice)} TND
                     </span>
-                    <span className="text-red-600">
-                      {convertToTND(product.salePrice)} DT
+                    <span className="text-sm text-gray-500 line-through">
+                      {convertToTND(product.price)} TND
                     </span>
                   </>
                 ) : (
-                  `${convertToTND(product.price)} DT`
+                  <span className="text-sm font-medium text-gray-900">
+                    {convertToTND(product.price)} TND
+                  </span>
                 )}
-              </p>
+              </div>
             </div>
 
-            {/* Color Options */}
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {product.colors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColors({ 
-                    ...selectedColors, 
-                    [product.id]: color 
-                  })}
-                  className={cn(
-                    "w-5 h-5 rounded-full transition-all",
-                    colorMap[color] || "bg-gray-200",
-                    selectedColors[product.id] === color && "ring-1 ring-offset-1 ring-black",
-                  )}
-                  title={color}
-                />
-              ))}
+            {/* Size Selection */}
+            <div className="space-y-2">
+              <label className="text-xs text-gray-600">Size:</label>
+              <div className="flex flex-wrap gap-1">
+                {product.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSizes({ ...selectedSizes, [product.id]: size });
+                    }}
+                    className={cn(
+                      "px-2 py-1 text-xs border rounded transition-colors",
+                      selectedSizes[product.id] === size
+                        ? "border-black bg-black text-white"
+                        : "border-gray-200 hover:border-gray-300"
+                    )}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Size Options */}
-            <div className="flex flex-wrap gap-1.5">
-              {product.sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSizes({ 
-                    ...selectedSizes, 
-                    [product.id]: size 
-                  })}
-                  className={cn(
-                    "px-2 py-1 text-xs border rounded transition-all",
-                    selectedSizes[product.id] === size
-                      ? "border-black bg-black text-white"
-                      : "border-gray-200 hover:border-gray-300"
-                  )}
-                >
-                  {size}
-                </button>
-              ))}
+            {/* Color Selection */}
+            <div className="space-y-2">
+              <label className="text-xs text-gray-600">Color:</label>
+              <div className="flex flex-wrap gap-1.5">
+                {product.colors.map((color) => {
+                  const colorValue = colorMap[color] || color;
+                  const isPattern = colorValue.startsWith('url');
+                  const isLight = ['White', 'Off White', 'Ivory', 'Cream', 'Beige'].includes(color);
+                  
+                  return (
+                    <button
+                      key={color}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedColors({ ...selectedColors, [product.id]: color });
+                      }}
+                      className={cn(
+                        "w-6 h-6 rounded-full relative transition-transform hover:scale-110",
+                        "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                        selectedColors[product.id] === color ? "ring-2 ring-black ring-offset-2" : "",
+                        isLight ? "border border-gray-200" : ""
+                      )}
+                      style={{
+                        backgroundColor: !isPattern ? colorValue : undefined,
+                        backgroundImage: isPattern ? colorValue : undefined,
+                        backgroundSize: isPattern ? 'cover' : undefined
+                      }}
+                      title={color}
+                    >
+                      {selectedColors[product.id] === color && (
+                        <span className={cn(
+                          "absolute inset-0 flex items-center justify-center text-xs",
+                          isLight ? "text-black" : "text-white"
+                        )}>
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Add to Cart Button */}
             <Button
-              onClick={() => handleAddToCart(product)}
-              className="w-full mt-3 bg-black hover:bg-gray-800 h-9 text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(product);
+              }}
+              className="w-full mt-2"
+              variant="outline"
               size="sm"
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
