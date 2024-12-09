@@ -11,23 +11,21 @@ import { useSearchParams } from "next/navigation";
 
 const collectionCategories = [
   {
-    label: "Suits",
-    subcategories: [
-      { name: "Casual Skirt Suit", query: "casual-skirt-suit" },
-      { name: "Business Formal Outfit", query: "business-formal-outfit" }
-    ]
-  },
-  {
     label: "Dresses",
     subcategories: [
       { name: "Straight-cut Long Dress", query: "straight-cut-long-dress" }
     ]
   },
   {
+    label: "Suits",
+    subcategories: [
+      { name: "Casual Skirt Suit", query: "casual-skirt-suit" }
+    ]
+  },
+  {
     label: "Outerwear",
     subcategories: [
-      { name: "Luxury Coat", query: "luxury-coat" },
-      { name: "Short Sporty Coat", query: "short-sporty-coat" }
+      { name: "Luxury Coat", query: "luxury-coat" }
     ]
   },
   {

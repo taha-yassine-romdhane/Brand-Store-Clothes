@@ -8,23 +8,35 @@ import { ArrowRight } from "lucide-react"
 const collaborations = [
   {
     id: 1,
-    name: "LAMASETTE x Aya",
-    description: "A stunning fusion of traditional craftsmanship and modern design, featuring unique pieces that celebrate Tunisian heritage with a contemporary twist.",
-    image: "/images/autres/3R8A1391.jpg",
-    artistImage: "/images/autres/3R8A1409.jpg",
+    name: "Aya",
+    title: "LAMASETTE x Aya",
+    description: "Embodying grace and sophistication, Aya brings our designs to life with her elegant presence. Her collection features timeless pieces that blend traditional elements with modern aesthetics.",
+    mainImage: "/images/autres/3R8A1354.jpg",
+    portraitImage: "/images/autres/3R8A1356.jpg",
+    galleryImages: [
+      "/images/autres/3R8A1354.jpg",
+      "/images/autres/3R8A1356.jpg",
+      "/images/product3-greysh-Aya/greysh Luxury coat2.jpg"
+    ],
     date: "Winter 2024",
     status: "Available Now",
-    link: "/collections?category=suits"
+    link: "/collections?collaborator=aya"
   },
   {
     id: 2,
-    name: "LAMASETTE x Emna",
-    description: "An innovative collection that reimagines classic silhouettes with bold, artistic elements, creating a perfect blend of elegance and creativity.",
-    image: "/images/autres/3R8A1463.jpg",
-    artistImage: "/images/autres/3R8A1467.jpg",
+    name: "Emna",
+    title: "LAMASETTE x Emna",
+    description: "With her unique style and natural charisma, Emna perfectly captures the essence of our brand. Her collection showcases contemporary designs that celebrate individuality and confidence.",
+    mainImage: "/images/autres/3R8A1476.jpg",
+    portraitImage: "/images/autres/3R8A1475.jpg",
+    galleryImages: [
+      "/images/autres/3R8A1476.jpg",
+      "/images/autres/3R8A1475.jpg",
+      "/images/autres/3R8A1482.jpg"
+    ],
     date: "Spring 2024",
-    status: "Coming Soon",
-    link: "/collections?category=dresses"
+    status: "Available Now",
+    link: "/collections?collaborator=emna"
   }
 ]
 
@@ -46,62 +58,75 @@ export default function CollaborationsPage() {
         </div>
         <div className="relative h-full flex items-center justify-center text-white bg-black/20">
           <div className="text-center px-4">
-            <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">Our Collaborations</h1>
+            <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">Meet Our Models</h1>
             <p className="text-xl max-w-2xl mx-auto drop-shadow-md">
-              Discover our exclusive partnerships and limited edition collections
+              Discover the talented individuals who bring our collections to life
             </p>
           </div>
         </div>
       </div>
 
-      {/* Collaborations Grid */}
+      {/* Models Grid */}
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="space-y-24">
-          {collaborations.map((collab, index) => (
+        <div className="space-y-32">
+          {collaborations.map((model, index) => (
             <div 
-              key={collab.id} 
+              key={model.id} 
               className={`flex flex-col ${
                 index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-              } gap-8 items-center`}
+              } gap-12 items-center`}
             >
-              {/* Main Collection Image */}
-              <div className="w-full lg:w-1/2 relative aspect-[4/3] overflow-hidden rounded-2xl">
-                <Image
-                  src={collab.image}
-                  alt={collab.name}
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-500"
-                  quality={90}
-                />
+              {/* Model Images Gallery */}
+              <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4">
+                <div className="col-span-2 relative aspect-[3/4] overflow-hidden rounded-2xl">
+                  <Image
+                    src={model.mainImage}
+                    alt={`${model.name} Main`}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-500"
+                    quality={90}
+                  />
+                </div>
+                {model.galleryImages.slice(1, 3).map((image, i) => (
+                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl">
+                    <Image
+                      src={image}
+                      alt={`${model.name} Gallery ${i + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-500"
+                      quality={85}
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Content */}
-              <div className="w-full lg:w-1/2 space-y-6">
-                <div className="relative w-24 h-24 mx-auto lg:mx-0 mb-6">
+              <div className="w-full lg:w-1/2 space-y-8">
+                <div className="relative w-32 h-32 mx-auto lg:mx-0">
                   <Image
-                    src={collab.artistImage}
-                    alt={`${collab.name} Artist`}
+                    src={model.portraitImage}
+                    alt={model.name}
                     fill
                     className="object-cover rounded-full border-4 border-white shadow-lg"
                   />
                 </div>
                 <div className="text-center lg:text-left">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">{collab.name}</h2>
-                  <p className="text-lg text-gray-600 mb-6">{collab.description}</p>
-                  <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">{model.title}</h2>
+                  <p className="text-lg text-gray-600 mb-8 leading-relaxed">{model.description}</p>
+                  <div className="flex flex-col sm:flex-row gap-6 items-center">
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-500">Release Date</p>
-                      <p className="font-semibold text-gray-900">{collab.date}</p>
+                      <p className="text-sm font-medium text-gray-500">Collection Release</p>
+                      <p className="font-semibold text-gray-900">{model.date}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-gray-500">Status</p>
-                      <p className="font-semibold text-emerald-600">{collab.status}</p>
+                      <p className="font-semibold text-emerald-600">{model.status}</p>
                     </div>
                     <Link 
-                      href={collab.link}
-                      className="ml-auto"
+                      href={model.link}
+                      className="sm:ml-auto"
                     >
-                      <Button className="bg-black hover:bg-gray-800">
+                      <Button className="bg-black hover:bg-gray-800 min-w-[200px]">
                         View Collection
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { HomePageProductGrid } from "@/components/home-page-product-grid"
+import type { Product, ProductImage } from "@prisma/client"
 
 async function getFeaturedProducts() {
   const products = await prisma.product.findMany({
@@ -18,7 +19,7 @@ async function getFeaturedProducts() {
       images: true
     },
     take: 3
-  })
+  }) as (Product & { images: ProductImage[] })[]
   return products
 }
 
@@ -28,14 +29,14 @@ export default async function Home() {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <div className="relative h-[80vh]">
+      <div className="relative h-[60vh]">
         <Image
-          src="/images/autres/3R8A1458.jpg"
+          src="/images/autres/3R8A1646.jpg"
           alt="Hero Image"
           fill
           className="object-cover"
           priority
-          quality={100}
+          quality={70}
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -92,7 +93,7 @@ export default async function Home() {
             <Link href="/collections?category=dresses" className="group">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
                 <Image
-                  src="images/product2-offwhite/offwhite stright-cut long dress  2.jpg"
+                  src="images/product2-offwhite-Emna/offwhite stright-cut long dress  2.jpg"
                   alt="Dresses Collection"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -114,7 +115,7 @@ export default async function Home() {
             <Link href="/collections?category=outerwear" className="group">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
                 <Image
-                  src="/images/product3-greysh/greysh Luxury coat2.jpg"
+                  src="/images/product3-greysh-Aya/greysh Luxury coat2.jpg"
                   alt="Outerwear Collection"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"

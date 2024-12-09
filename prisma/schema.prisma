@@ -14,17 +14,19 @@ datasource db {
 }
 
 model Product {
-  id          Int           @id @default(autoincrement())
-  name        String
-  price       Float
-  salePrice   Float?        // Made optional since not all products might be on sale
-  images      ProductImage[] // Relation to product images
-  sizes       String[]
-  colors      String[]
-  category    String
-  description String?       // Added description field
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String
+  price         Float
+  salePrice     Float?
+  category      String
+  colors        String[]
+  sizes         String[]
+  collaborateur String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  images        ProductImage[]
+  orderItems    OrderItem[]
 }
 
 model ProductImage {
@@ -37,4 +39,39 @@ model ProductImage {
   updatedAt DateTime @updatedAt
 
   @@index([productId])
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  customerName String
+  phoneNumber String
+  address     String
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  size      String?
+  color     String?
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

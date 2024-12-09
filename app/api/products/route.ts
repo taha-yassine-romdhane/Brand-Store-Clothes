@@ -5,8 +5,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
-    const size = searchParams.get("size");
-    const color = searchParams.get("color");
+    const collaborateur = searchParams.get("collaborateur");
     const sort = searchParams.get("sort");
     const product = searchParams.get("product");
 
@@ -20,17 +19,11 @@ export async function GET(request: Request) {
       };
     }
 
-    // Size filter
-    if (size && size !== "all") {
-      where.sizes = {
-        has: size
-      };
-    }
-
-    // Color filter
-    if (color && color !== "all") {
-      where.colors = {
-        has: color
+    // Collaborateur filter
+    if (collaborateur && collaborateur !== "all") {
+      where.collaborateur = {
+        equals: collaborateur.toLowerCase(),
+        mode: 'insensitive'
       };
     }
 
@@ -54,16 +47,18 @@ export async function GET(request: Request) {
       include: {
         images: true
       },
-      orderBy: sort === "price-desc" 
-        ? { price: "desc" }
-        : sort === "price-asc"
+      orderBy: sort === "price-asc" 
         ? { price: "asc" }
-        : { createdAt: "desc" }
+        : sort === "price-desc"
+        ? { price: "desc" }
+        : sort === "newest"
+        ? { createdAt: "desc" }
+        : { id: "asc" }
     });
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error("[PRODUCTS_GET]", error);
+    console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 }

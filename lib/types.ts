@@ -8,13 +8,14 @@ export interface ProductImage {
 export interface Product {
   id: number;
   name: string;
+  description: string;
   price: number;
   salePrice?: number;
-  description?: string;
+  category: string;
   colors: string[];
   sizes: string[];
-  category: string;
+  collaborateur?: string;
+  images: ProductImage[];
   createdAt: Date;
   updatedAt: Date;
-  images: ProductImage[];
 }

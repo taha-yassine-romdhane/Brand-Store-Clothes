@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Product } from "@/lib/types"
-import { Card, Badge, Button } from "@/components/ui"
+import { useCart } from "@/lib/context/cart-context"
+import { Button } from "@/components/ui/button"
 import { ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { useCart } from "@/lib/context/cart-context"
 
 const colorMap: { [key: string]: string } = {
   White: "bg-white border border-gray-200",
@@ -36,14 +36,13 @@ interface ProductWithImages extends Product {
 interface ProductGridProps {
   filters: {
     category: string;
-    size: string;
-    color: string;
+    collaborator: string;
     sort: string;
     product: string;
   };
 }
 
-export function ProductGrid({ filters }: ProductGridProps) {
+const ProductGrid = ({ filters }: ProductGridProps) => {
   const router = useRouter()
   const [products, setProducts] = useState<ProductWithImages[] | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,8 +64,7 @@ export function ProductGrid({ filters }: ProductGridProps) {
       try {
         const params = new URLSearchParams();
         if (filters.category !== 'all') params.append('category', filters.category);
-        if (filters.size !== 'all') params.append('size', filters.size);
-        if (filters.color !== 'all') params.append('color', filters.color);
+        if (filters.collaborator !== 'all') params.append('collaborateur', filters.collaborator);
         if (filters.sort !== 'featured') params.append('sort', filters.sort);
         if (filters.product) params.append('product', filters.product);
 
@@ -96,7 +94,7 @@ export function ProductGrid({ filters }: ProductGridProps) {
 
   const handleAddToCart = (product: Product & { images: { id: number; url: string; isMain: boolean; }[] }) => {
     if (!selectedColors[product.id] || !selectedSizes[product.id]) {
-      // You might want to show a toast or alert here
+      alert('Please select both size and color');
       return;
     }
     
@@ -201,22 +199,34 @@ export function ProductGrid({ filters }: ProductGridProps) {
 
           {/* Product Info */}
           <div className="space-y-2">
-            <h3 className="font-medium text-sm text-gray-700 truncate">{product.name}</h3>
-            <div className="flex items-center space-x-2">
-              {product.salePrice ? (
-                <>
-                  <p className="text-sm font-medium text-gray-900">
-                    {convertToTND(product.salePrice)} DT
+            <div className="mt-2 flex justify-between items-start">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">
+                  {product.name}
+                </h3>
+                {product.collaborateur && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    By {product.collaborateur}
                   </p>
-                  <p className="text-sm text-gray-500 line-through">
-                    {convertToTND(product.price)} DT
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm font-medium text-gray-900">
-                  {convertToTND(product.price)} DT
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  {product.category}
                 </p>
-              )}
+              </div>
+              <p className="text-sm font-medium text-gray-900">
+                {product.salePrice ? (
+                  <>
+                    <span className="line-through text-gray-500 mr-2">
+                      {convertToTND(product.price)} DT
+                    </span>
+                    <span className="text-red-600">
+                      {convertToTND(product.salePrice)} DT
+                    </span>
+                  </>
+                ) : (
+                  `${convertToTND(product.price)} DT`
+                )}
+              </p>
             </div>
 
             {/* Color Options */}
@@ -274,3 +284,5 @@ export function ProductGrid({ filters }: ProductGridProps) {
     </div>
   );
 }
+
+export default ProductGrid;

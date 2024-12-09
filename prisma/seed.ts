@@ -10,7 +10,8 @@ async function main() {
   const product1Colors = [
     { 
       name: 'Chocolate', 
-      dir: 'Product1-chocolate', 
+      dir: 'Product1-chocolate-Emna', 
+      collaborateur: 'Emna',
       images: [
         'chocolate casual skirt suit 1.jpg',
         'chocolate casual skirt suit 2.jpg',
@@ -20,7 +21,8 @@ async function main() {
     },
     { 
       name: 'White', 
-      dir: 'Product1-white', 
+      dir: 'Product1-white-Emna',
+      collaborateur: 'Emna',
       images: [
         'white casual skirt suit 1.jpg',
         'white casual skirt suit 2.jpg',
@@ -31,7 +33,8 @@ async function main() {
     },
     { 
       name: 'Caramel', 
-      dir: 'product1-caramel', 
+      dir: 'product1-caramel-Emna',
+      collaborateur: 'Emna',
       images: [
         'Caramel casual skirt suit 1.jpg',
         'Caramel casual skirt suit 2.jpg',
@@ -41,7 +44,8 @@ async function main() {
     },
     { 
       name: 'Mint Green', 
-      dir: 'product1-mintgreen', 
+      dir: 'product1-mintgreen-Emna',
+      collaborateur: 'Emna',
       images: [
         'mintgreen casual skirt suit 1.jpg',
         'mintgreen casual skirt suit 2.jpg',
@@ -59,6 +63,7 @@ async function main() {
         category: 'Suits',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        collaborateur: color.collaborateur
       },
     })
 
@@ -78,7 +83,8 @@ async function main() {
   const product2Colors = [
     { 
       name: 'Caramel', 
-      dir: 'product2-Caramel', 
+      dir: 'product2-Caramel-Aya',
+      collaborateur: 'Aya',
       images: [
         'Caramel stright-cut long dress 1 .jpg',
         'Caramel stright-cut long dress 2.jpg',
@@ -87,7 +93,8 @@ async function main() {
     },
     { 
       name: 'Burgundy', 
-      dir: 'product2-burgandi', 
+      dir: 'product2-burgandi-Emna',
+      collaborateur: 'Emna',
       images: [
         'burgendi stright-cut long dress 1.jpg',
         'burgendi stright-cut long dress 2.jpg',
@@ -96,7 +103,8 @@ async function main() {
     },
     { 
       name: 'Green', 
-      dir: 'product2-green', 
+      dir: 'product2-green-Aya',
+      collaborateur: 'Aya',
       images: [
         'green stright-cut long dress 1 .jpg',
         'green stright-cut long dress 2.jpg'
@@ -104,7 +112,8 @@ async function main() {
     },
     { 
       name: 'Off White', 
-      dir: 'product2-offwhite', 
+      dir: 'product2-offwhite-Emna',
+      collaborateur: 'Emna',
       images: [
         'offwhite stright-cut long dress 1.jpg',
         'offwhite stright-cut long dress  2.jpg',
@@ -122,6 +131,7 @@ async function main() {
         category: 'Dresses',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        collaborateur: color.collaborateur
       },
     })
 
@@ -140,7 +150,8 @@ async function main() {
   const product3Colors = [
     { 
       name: 'Greyish', 
-      dir: 'product3-greysh', 
+      dir: 'product3-greysh-Aya',
+      collaborateur: 'Aya',
       images: [
         'greysh Luxury coat1.jpg',
         'greysh Luxury coat2.jpg'
@@ -148,12 +159,11 @@ async function main() {
     },
     { 
       name: 'White', 
-      dir: 'product3-white', 
+      dir: 'product3-white-Aya',
+      collaborateur: 'Aya',
       images: [
-        'white Luxury coat 1.jpg',
-        'white Luxury coat 2.jpg',
-        'white Luxury coat 3.jpg',
-        'white Luxury coat 4.jpg'
+        'white Luxury coat1.jpg',
+        'white Luxury coat2.jpg'
       ]
     }
   ]
@@ -162,11 +172,12 @@ async function main() {
     const product = await prisma.product.create({
       data: {
         name: `Luxury Coat - ${color.name}`,
-        description: 'Premium luxury coat made with the finest materials. Perfect for making a statement.',
+        description: 'Premium luxury coat made from high-quality materials. Perfect for cold weather and formal occasions.',
         price: 299.99,
         category: 'Outerwear',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        collaborateur: color.collaborateur
       },
     })
 
@@ -190,6 +201,7 @@ async function main() {
       category: 'Suits',
       colors: ['Black'],
       sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      collaborateur: 'Aya'
     },
   })
 
@@ -203,7 +215,7 @@ async function main() {
   for (const image of product4Images) {
     await prisma.productImage.create({
       data: {
-        url: `/images/product4/${image}`,
+        url: `/images/product4-Aya/${image}`,
         isMain: image.includes('1'),
         productId: product4.id,
       },
@@ -213,11 +225,11 @@ async function main() {
   // Product 5 - Short Sporty Coat (Multiple Colors)
   const product5Colors = [
     { 
-      name: 'Pink', 
+      name: 'Pink',
       images: ['Pink short sporty coat1.jpg']
     },
     { 
-      name: 'Greyish', 
+      name: 'Greyish',
       images: [
         'greysh short sporty coat1 .jpg',
         'greysh short sporty coat2.jpg',
@@ -225,7 +237,7 @@ async function main() {
       ]
     },
     { 
-      name: 'Sky Blue', 
+      name: 'Sky Blue',
       images: ['skybleu short sporty coat 1.jpg']
     }
   ]
@@ -239,13 +251,14 @@ async function main() {
         category: 'Outerwear',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        collaborateur: 'Aya'
       },
     })
 
     for (const image of color.images) {
       await prisma.productImage.create({
         data: {
-          url: `/images/product5/${image}`,
+          url: `/images/product5-Aya/${image}`,
           isMain: true,
           productId: product.id,
         },
@@ -253,15 +266,16 @@ async function main() {
     }
   }
 
-  // Accessories - Neck Cover
+  // Accessory
   const accessory = await prisma.product.create({
     data: {
       name: 'Elegant Neck Cover - Blue',
-      description: 'Stylish neck cover in a beautiful blue shade. Perfect for adding elegance to any outfit.',
-      price: 29.99,
+      description: 'A beautiful neck cover in royal blue.',
+      price: 49.99,
       category: 'Accessories',
       colors: ['Blue'],
       sizes: ['One Size'],
+      collaborateur: 'Emna'
     },
   })
 

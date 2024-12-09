@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ProductGrid } from "@/components/product-grid";
+import ProductGrid from "@/components/product-grid";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,51 +14,31 @@ import {
 
 // Define filter options
 const CATEGORIES = [
-  { value: "all", label: "All Categories" },
-  { value: "suits", label: "Suits" },
+  { value: "all", label: "View All" },
   { value: "dresses", label: "Dresses" },
+  { value: "suits", label: "Suits" },
   { value: "outerwear", label: "Outerwear" },
   { value: "accessories", label: "Accessories" }
 ];
 
-const SIZES = [
-  { value: "all", label: "All Sizes" },
-  { value: "XS", label: "XS" },
-  { value: "S", label: "S" },
-  { value: "M", label: "M" },
-  { value: "L", label: "L" },
-  { value: "XL", label: "XL" },
-  { value: "One Size", label: "One Size" }
-];
-
-const COLORS = [
-  { value: "all", label: "All Colors" },
-  { value: "White", label: "White" },
-  { value: "Black", label: "Black" },
-  { value: "Chocolate", label: "Chocolate" },
-  { value: "Caramel", label: "Caramel" },
-  { value: "Mint Green", label: "Mint Green" },
-  { value: "Burgundy", label: "Burgundy" },
-  { value: "Green", label: "Green" },
-  { value: "Off White", label: "Off White" },
-  { value: "Greyish", label: "Greyish" },
-  { value: "Sky Blue", label: "Sky Blue" },
-  { value: "Pink", label: "Pink" },
-  { value: "Blue", label: "Blue" },
+const COLLABORATORS = [
+  { value: "all", label: "All Collections" },
+  { value: "aya", label: "Aya" },
+  { value: "emna", label: "Emna" }
 ];
 
 const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
+  { value: "newest", label: "New Arrivals" },
   { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
+  { value: "price-desc", label: "Price: High to Low" }
 ];
 
 export default function CollectionsPage() {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState({
     category: searchParams.get("category") || "all",
-    size: searchParams.get("size") || "all",
-    color: searchParams.get("color") || "all",
+    collaborator: searchParams.get("collaborator") || "all",
     sort: searchParams.get("sort") || "featured",
     product: searchParams.get("product") || ""
   });
@@ -67,22 +47,20 @@ export default function CollectionsPage() {
   useEffect(() => {
     setFilters({
       category: searchParams.get("category") || "all",
-      size: searchParams.get("size") || "all",
-      color: searchParams.get("color") || "all",
+      collaborator: searchParams.get("collaborator") || "all",
       sort: searchParams.get("sort") || "featured",
       product: searchParams.get("product") || ""
     });
   }, [searchParams]);
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value, product: "" }));
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleClearFilters = () => {
     setFilters({
       category: "all",
-      size: "all",
-      color: "all",
+      collaborator: "all",
       sort: "featured",
       product: ""
     });
@@ -90,103 +68,108 @@ export default function CollectionsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">
-              {filters.product 
-                ? filters.product.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
-                : filters.category !== "all" 
-                  ? filters.category.charAt(0).toUpperCase() + filters.category.slice(1)
-                  : "All Collections"
-              }
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Discover our latest collection of elegant and timeless pieces
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-4 mb-8 items-center">
-            {/* Categories */}
-            <Select
-              value={filters.category}
-              onValueChange={(value) => handleFilterChange("category", value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Sizes */}
-            <Select
-              value={filters.size}
-              onValueChange={(value) => handleFilterChange("size", value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Size" />
-              </SelectTrigger>
-              <SelectContent>
-                {SIZES.map((size) => (
-                  <SelectItem key={size.value} value={size.value}>
-                    {size.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Colors */}
-            <Select
-              value={filters.color}
-              onValueChange={(value) => handleFilterChange("color", value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Color" />
-              </SelectTrigger>
-              <SelectContent>
-                {COLORS.map((color) => (
-                  <SelectItem key={color.value} value={color.value}>
-                    {color.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Sort */}
-            <Select
-              value={filters.sort}
-              onValueChange={(value) => handleFilterChange("sort", value)}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Clear Filters */}
-            <Button
-              variant="outline"
-              onClick={handleClearFilters}
-              className="ml-auto"
-            >
-              Clear Filters
-            </Button>
-          </div>
-
-          <ProductGrid filters={filters} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900">
+            {filters.product 
+              ? filters.product.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+              : filters.category !== "all" 
+                ? CATEGORIES.find(c => c.value === filters.category)?.label
+                : "All Collections"
+            }
+            {filters.collaborator !== "all" && (
+              <span className="text-gray-500">
+                {" "}modeled by {COLLABORATORS.find(c => c.value === filters.collaborator)?.label}
+              </span>
+            )}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Discover our latest collection of elegant and timeless pieces
+          </p>
         </div>
+
+        {/* Filters */}
+        <div className="mb-8 space-y-4">
+          {/* Category and Collaborator Filters */}
+          <div className="flex flex-wrap items-start gap-8 pb-4 border-b">
+            {/* Category Filter */}
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-gray-700">Category</span>
+              <div className="flex flex-wrap gap-2 min-h-[40px] items-center">
+                {CATEGORIES.map((category) => (
+                  <button
+                    key={category.value}
+                    onClick={() => handleFilterChange("category", category.value)}
+                    className={`px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap ${
+                      filters.category === category.value
+                        ? "bg-black text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Collaborator Filter */}
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-gray-700">Model</span>
+              <div className="flex flex-wrap gap-2 min-h-[40px] items-center">
+                {COLLABORATORS.map((collaborator) => (
+                  <button
+                    key={collaborator.value}
+                    onClick={() => handleFilterChange("collaborator", collaborator.value)}
+                    className={`px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap ${
+                      filters.collaborator === collaborator.value
+                        ? "bg-black text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {collaborator.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort and Clear Filters */}
+            <div className="flex flex-col gap-2 ml-auto">
+              <span className="text-sm font-medium text-gray-700">Sort By</span>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={filters.sort}
+                  onValueChange={(value) => handleFilterChange("sort", value)}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {(filters.category !== "all" || filters.collaborator !== "all") && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="text-gray-600 hover:text-gray-900 whitespace-nowrap"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Grid */}
+        <ProductGrid filters={filters} />
       </div>
     </div>
   );
