@@ -60,6 +60,9 @@ const Navbar = () => {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState<{
     products: Array<{
       id: number;
@@ -99,8 +102,12 @@ const Navbar = () => {
           products: [],
           categories: []
         });
+        setError(null);
         return;
       }
+
+      setIsLoading(true);
+      setError(null);
 
       try {
         console.log("[NAVBAR] Fetching suggestions for:", searchQuery);
@@ -116,18 +123,56 @@ const Navbar = () => {
           products: data.products || [],
           categories: data.categories || []
         });
+        setSelectedIndex(-1);
       } catch (error) {
         console.error('[NAVBAR] Error fetching suggestions:', error);
+        setError('Failed to load suggestions. Please try again.');
         setSuggestions({
           products: [],
           categories: []
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     const debounceTimer = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions) return;
+
+    const totalItems = (suggestions?.categories?.length || 0) + (suggestions?.products?.length || 0);
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % totalItems);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + totalItems) % totalItems);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          const categoriesLength = suggestions?.categories?.length || 0;
+          if (selectedIndex < categoriesLength) {
+            handleSuggestionClick(suggestions.categories[selectedIndex]);
+          } else {
+            handleSuggestionClick(suggestions.products[selectedIndex - categoriesLength]);
+          }
+        } else {
+          handleSearch(e);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        break;
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,7 +264,7 @@ const Navbar = () => {
 
           <div className="flex items-center gap-x-4">
             <div ref={searchContainerRef} className="hidden lg:block lg:flex-1 relative">
-              <form onSubmit={handleSearch}>
+              <form onSubmit={handleSearch} role="search">
                 <div className="relative">
                   <input
                     type="text"
@@ -230,68 +275,103 @@ const Navbar = () => {
                       setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={handleKeyDown}
+                    aria-expanded={showSuggestions}
+                    aria-controls="search-suggestions"
+                    aria-label="Search products"
+                    aria-describedby={error ? "search-error" : undefined}
                     className="w-full bg-gray-100 rounded-full px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-colors"
                   />
                   <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                  {isLoading && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+                    </div>
+                  )}
                 </div>
               </form>
 
               {/* Search Suggestions */}
               {showSuggestions && searchQuery.length >= 2 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
-                  {suggestions?.categories?.length > 0 && (
-                    <div className="p-2">
-                      <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Categories</h3>
-                      {suggestions.categories.map((category, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleSuggestionClick(category)}
-                          className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-2"
-                        >
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <Search className="h-4 w-4 text-gray-500" />
-                          </div>
-                          <span>{category.name}</span>
-                        </button>
-                      ))}
+                <div 
+                  id="search-suggestions"
+                  role="listbox"
+                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50"
+                >
+                  {error ? (
+                    <div id="search-error" className="p-4 text-center text-red-500">
+                      {error}
                     </div>
-                  )}
-
-                  {suggestions?.products?.length > 0 && (
-                    <div className="p-2">
-                      <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Products</h3>
-                      {suggestions.products.map((product) => (
-                        <button
-                          key={product.id}
-                          onClick={() => handleSuggestionClick(product)}
-                          className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-3"
-                        >
-                          <div className="w-12 h-12 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                            {product.imageUrl ? (
-                              <img
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  ) : (
+                    <>
+                      {suggestions?.categories?.length > 0 && (
+                        <div className="p-2">
+                          <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Categories</h3>
+                          {suggestions.categories.map((category, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleSuggestionClick(category)}
+                              onMouseEnter={() => setSelectedIndex(index)}
+                              role="option"
+                              aria-selected={selectedIndex === index}
+                              className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-2 ${
+                                selectedIndex === index ? 'bg-gray-100' : ''
+                              }`}
+                            >
+                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                                 <Search className="h-4 w-4 text-gray-500" />
                               </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">{product.name}</div>
-                            <div className="text-xs text-gray-500">{product.category}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                              <span>{category.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
-                  {(!suggestions?.products?.length && !suggestions?.categories?.length) && (
-                    <div className="p-4 text-center text-gray-500">
-                      No results found for "{searchQuery}"
-                    </div>
+                      {suggestions?.products?.length > 0 && (
+                        <div className="p-2">
+                          <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Products</h3>
+                          {suggestions.products.map((product, index) => {
+                            const actualIndex = index + (suggestions?.categories?.length || 0);
+                            return (
+                              <button
+                                key={product.id}
+                                onClick={() => handleSuggestionClick(product)}
+                                onMouseEnter={() => setSelectedIndex(actualIndex)}
+                                role="option"
+                                aria-selected={selectedIndex === actualIndex}
+                                className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-3 ${
+                                  selectedIndex === actualIndex ? 'bg-gray-100' : ''
+                                }`}
+                              >
+                                <div className="w-12 h-12 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                                  {product.imageUrl ? (
+                                    <img
+                                      src={product.imageUrl}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                      <Search className="h-4 w-4 text-gray-500" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-sm">{product.name}</div>
+                                  <div className="text-xs text-gray-500">{product.category}</div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {(!suggestions?.products?.length && !suggestions?.categories?.length) && (
+                        <div className="p-4 text-center text-gray-500">
+                          No results found for "{searchQuery}"
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
@@ -319,28 +399,114 @@ const Navbar = () => {
       </Container>
       {isSearching && (
         <div className="fixed inset-0 z-50 bg-white px-4 py-6">
-          <form onSubmit={handleSearch}>
+          <form onSubmit={handleSearch} role="search">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full bg-gray-100 rounded-full px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-colors"
+                aria-expanded={showSuggestions}
+                aria-controls="mobile-search-suggestions"
+                aria-label="Search products"
+                aria-describedby={error ? "mobile-search-error" : undefined}
                 autoFocus
               />
               <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              {isLoading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+                </div>
+              )}
             </div>
           </form>
-          <button
-            onClick={() => setIsSearching(false)}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-          >
-            <span className="sr-only">Close search</span>
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M6 18L18 6M6 6l12 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+
+          {/* Mobile Search Suggestions */}
+          {showSuggestions && searchQuery.length >= 2 && (
+            <div 
+              id="mobile-search-suggestions"
+              role="listbox"
+              className="mt-4 bg-white rounded-lg border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto"
+            >
+              {error ? (
+                <div id="mobile-search-error" className="p-4 text-center text-red-500">
+                  {error}
+                </div>
+              ) : (
+                <>
+                  {suggestions?.categories?.length > 0 && (
+                    <div className="p-2">
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Categories</h3>
+                      {suggestions.categories.map((category, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSuggestionClick(category)}
+                          onMouseEnter={() => setSelectedIndex(index)}
+                          role="option"
+                          aria-selected={selectedIndex === index}
+                          className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-2 ${
+                            selectedIndex === index ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <Search className="h-4 w-4 text-gray-500" />
+                          </div>
+                          <span>{category.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {suggestions?.products?.length > 0 && (
+                    <div className="p-2">
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase px-3 mb-2">Products</h3>
+                      {suggestions.products.map((product, index) => {
+                        const actualIndex = index + (suggestions?.categories?.length || 0);
+                        return (
+                          <button
+                            key={product.id}
+                            onClick={() => handleSuggestionClick(product)}
+                            onMouseEnter={() => setSelectedIndex(actualIndex)}
+                            role="option"
+                            aria-selected={selectedIndex === actualIndex}
+                            className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md flex items-center space-x-3 ${
+                              selectedIndex === actualIndex ? 'bg-gray-100' : ''
+                            }`}
+                          >
+                            <div className="w-12 h-12 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                              {product.imageUrl ? (
+                                <img
+                                  src={product.imageUrl}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                  <Search className="h-4 w-4 text-gray-500" />
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm">{product.name}</div>
+                              <div className="text-xs text-gray-500">{product.category}</div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {(!suggestions?.products?.length && !suggestions?.categories?.length) && (
+                    <div className="p-4 text-center text-gray-500">
+                      No results found for "{searchQuery}"
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
