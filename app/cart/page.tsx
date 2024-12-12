@@ -20,7 +20,7 @@ export default function CartPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const shipping = items.length > 0 ? 15.99 : 0
+  const shipping = items.length > 0 ? 7.00 : 0
   const total = totalPrice + shipping
 
   const handleSubmitOrder = async () => {
