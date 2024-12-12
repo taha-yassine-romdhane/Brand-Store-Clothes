@@ -102,10 +102,9 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({})
   const { addItem } = useCart()
 
-  // Convert USD to TND (Tunisian Dinar)
-  const convertToTND = (usdPrice: number) => {
-    const exchangeRate = 3.13; // 1 USD = 3.13 TND (approximate)
-    return (usdPrice * exchangeRate).toFixed(2);
+  // Remove currency conversion
+  const formatPrice = (price: number) => {
+    return price.toFixed(2);
   };
 
   useEffect(() => {
@@ -267,15 +266,15 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                 {product.salePrice ? (
                   <>
                     <span className="text-sm font-medium text-red-600">
-                      {convertToTND(product.salePrice)} TND
+                      {formatPrice(product.salePrice)}
                     </span>
                     <span className="text-sm text-gray-500 line-through">
-                      {convertToTND(product.price)} TND
+                      {formatPrice(product.price)}
                     </span>
                   </>
                 ) : (
                   <span className="text-sm font-medium text-gray-900">
-                    {convertToTND(product.price)} TND
+                    {formatPrice(product.price)}
                   </span>
                 )}
               </div>

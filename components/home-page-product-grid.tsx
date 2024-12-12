@@ -48,9 +48,10 @@ export function HomePageProductGrid({ initialProducts = [] }: { initialProducts?
   const [selectedSizes, setSelectedSizes] = useState<{ [key: number]: string }>({})
   const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({})
 
-  const convertToTND = (price: number) => {
-    return (price * 3.17).toFixed(2)
-  }
+  // Format price without conversion
+  const formatPrice = (price: number) => {
+    return price.toFixed(2);
+  };
 
   const handleAddToCart = (product: ProductWithImages) => {
     const selectedSize = selectedSizes[product.id]
@@ -110,15 +111,15 @@ export function HomePageProductGrid({ initialProducts = [] }: { initialProducts?
               {product.salePrice ? (
                 <>
                   <span className="text-lg font-bold text-red-500">
-                    {convertToTND(product.salePrice)} TND
+                    {formatPrice(product.salePrice)} TND
                   </span>
                   <span className="text-sm text-gray-500 line-through">
-                    {convertToTND(product.price)} TND
+                    {formatPrice(product.price)} TND
                   </span>
                 </>
               ) : (
                 <span className="text-lg font-bold">
-                  {convertToTND(product.price)} TND
+                  {formatPrice(product.price)} TND
                 </span>
               )}
             </div>

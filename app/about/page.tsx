@@ -13,41 +13,25 @@ import {
 export default function AboutUs() {
     const owners = [
         {
-            name: "Jane Doe",
+            name: "Aya Romdhane",
             role: "Founder & Creative Director",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&h=400&fit=crop",
+            image: "2d36c081-65d7-4957-bbc3-86857614dfb1.jpg",
         },
         {
-            name: "John Smith",
+            name: "Sameh Zammit",
             role: "CEO",
-            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=400&fit=crop",
-        },
-        {
-            name: "Emily Brown",
-            role: "Head of Design",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&h=400&fit=crop",
+            image: "017e5d9b-1231-46e6-8e1f-02cfeae2b5c5.jpg",
         },
     ];
+    
 
     const locations = [
         { 
-            city: "New York", 
-            address: "123 Fashion Ave, New York, NY 10001",
-            image: "https://images.unsplash.com/photo-1522083165195-3424ed129620",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343005!2d-73.99038388459469!3d40.74144797932861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sFashion%20Ave%2C%20New%20York%2C%20NY%2010001!5e0!3m2!1sen!2sus"
-        },
-        { 
-            city: "Los Angeles", 
-            address: "456 Style Blvd, Los Angeles, CA 90001",
-            image: "https://images.unsplash.com/photo-1449034446853-66c86144b0ad",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3305.7153376542166!2d-118.24368388478195!3d34.052235480605685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c7b85dea2a93%3A0x1ff47c3ceb7bb2d5!2sLos%20Angeles%2C%20CA%2090001!5e0!3m2!1sen!2sus"
-        },
-        { 
-            city: "Paris", 
-            address: "789 Rue de la Mode, 75001 Paris, France",
-            image: "https://images.unsplash.com/photo-1502899576159-f224dc2349fa",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.6898366255713!2d2.3361458156744775!3d48.86146507928747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e18a5f84801%3A0x6eb5daa624bdebd2!2s75001%20Paris%2C%20France!5e0!3m2!1sen!2sus"
-        },
+            city: "Tunisia Sousse , Msaken", 
+            address: "Chera el bi2a , Rampoint Urgence , Msaken",
+            image: "Capture d'écran 2024-12-12 184551.png",
+            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3234.9891632755877!2d10.572296375754671!3d35.73798852939042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fdf5d5083bd377%3A0x58184a9b95cca8f4!2sWood's%20pizzaria!5e0!3m2!1sen!2stn!4v1702403810"  },
+      
     ];
 
     return (
@@ -58,14 +42,14 @@ export default function AboutUs() {
 
             {/* Brand Story */}
             <section className="mb-16">
-                <h2 className="text-3xl font-bold text-secondary mb-4">Our Story</h2>
+                <h2 className="text-3xl font-bold text-primary mb-4">Our Story</h2>
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     <div>
                         <p className="text-lg mb-6 leading-relaxed">
-                            Trendy Threads was born out of a passion for sustainable fashion
-                            and a desire to create clothing that not only looks good but feels
-                            good too. Founded in 2010 by Jane Doe, our journey began in a
-                            small workshop in Brooklyn, New York.
+                            LAMASETTE is a fashion brand that is dedicated to creating
+                            timeless and stylish clothing for women. Founded in 2021 by SAMEH ZAMMIT
+                             our mission is to provide a range of high-quality clothing that is both
+                            fashionable and sustainable.
                         </p>
                         <p className="text-lg mb-6 leading-relaxed">
                             Over the years, we've grown from a local boutique to an
@@ -76,9 +60,9 @@ export default function AboutUs() {
                             Explore Our Products
                         </button>
                     </div>
-                    <div className="relative h-[400px] rounded-lg overflow-hidden shadow-lg">
+                    <div className="relative h-[600px] rounded-lg overflow-hidden shadow-lg">
                         <Image
-                            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200"
+                            src="/téléchargement.jpg"
                             alt="Trendy Threads workshop"
                             layout="fill"
                             objectFit="cover"
@@ -89,7 +73,7 @@ export default function AboutUs() {
 
             {/* Owners */}
             <section className="mb-16">
-                <h2 className="text-3xl font-bold text-secondary mb-4">Meet Our Team</h2>
+                <h2 className="text-3xl font-bold text-primary mb-4">Meet Our Team</h2>
                 <Carousel className="w-full max-w-4xl mx-auto">
                     <CarouselContent>
                         {owners.map((owner, index) => (
@@ -120,7 +104,7 @@ export default function AboutUs() {
 
             {/* Locations */}
             <section>
-                <h2 className="text-3xl font-bold text-secondary mb-4">Our Locations</h2>
+                <h2 className="text-3xl font-bold text-primary mb-4">Our Locations</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {locations.map((location, index) => (
                         <Card
