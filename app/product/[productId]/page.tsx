@@ -48,7 +48,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const { addItem } = useCart()
 
   const convertToTND = (price: number) => {
-    return (price * 3.17).toFixed(2)
+    return (price).toFixed(2)
   }
 
   useEffect(() => {

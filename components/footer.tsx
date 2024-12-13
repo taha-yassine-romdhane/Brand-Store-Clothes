@@ -17,18 +17,13 @@ export function Footer() {
             </p>
             {/* Social Links */}
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link href="https://www.facebook.com/profile.php?id=100083564652543" className="text-muted-foreground hover:text-primary">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
+              <Link href="https://www.instagram.com/lamasett_chezsameh/" className="text-muted-foreground hover:text-primary">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
-                <Twitter className="h-5 w-5" />
-              </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary">
-                <Youtube className="h-5 w-5" />
-              </Link>
+             
             </div>
           </div>
 
