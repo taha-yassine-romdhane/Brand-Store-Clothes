@@ -10,13 +10,13 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'LAMASETTE - Timeless Fashion for the Modern Individual',
-  description: 'Discover our collection of premium, sustainable clothing crafted for the modern wardrobe. Shop the latest trends in fashion at LAMASETTE.',
-  keywords: 'fashion, clothing, sustainable fashion, modern wardrobe, premium clothing, LAMASETTE',
+  description: 'Discover our collection of premium, sustainable clothing crafted for the modern wardrobe.',
+  keywords: 'fashion, clothing, sustainable fashion, modern wardrobe, premium clothing, LAMASETTE, Tunisia',
   openGraph: {
     title: 'LAMASETTE - Timeless Fashion for the Modern Individual',
     description: 'Discover our collection of premium, sustainable clothing crafted for the modern wardrobe.',
     type: 'website',
-    locale: 'en_US',
+    locale: 'ar_TN',
     siteName: 'LAMASETTE',
   },
   twitter: {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code', // Add your Google Search Console verification code
+    google: 'eTBLhN83bAPwB_OLA-S5d3dEBuC6PjcTLl1Ngc4TIng',
   },
 };
 
