@@ -52,18 +52,15 @@ export async function GET() {
         createdAt: safeOrder.createdAt.toISOString(),
         updatedAt: safeOrder.updatedAt.toISOString(),
         items: safeOrder.items.map(item => {
-          // Ensure all required fields exist for each item
+          // Only include fields that exist in the OrderItem model
           const safeItem = {
             ...item,
-            createdAt: item.createdAt || new Date(),
-            updatedAt: item.updatedAt || new Date(),
+            product: {
+              ...item.product
+            }
           };
 
-          return {
-            ...safeItem,
-            createdAt: safeItem.createdAt.toISOString(),
-            updatedAt: safeItem.updatedAt.toISOString(),
-          };
+          return safeItem;
         }),
       };
     });
@@ -71,8 +68,9 @@ export async function GET() {
     return NextResponse.json(serializedOrders);
   } catch (error) {
     console.error('Detailed orders fetch error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to fetch orders', details: error.message },
+      { error: 'Failed to fetch orders', details: errorMessage },
       { status: 500 }
     );
   } finally {
