@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       
       // Save file to public/images/autres directory
       const publicPath = path.join(process.cwd(), 'public', 'images', 'autres');
-      await writeFile(path.join(publicPath, filename), buffer);
+      await writeFile(path.join(publicPath, filename), new Uint8Array(buffer));
       
       // Return the URL
       const imageUrl = `/images/autres/${filename}`;
