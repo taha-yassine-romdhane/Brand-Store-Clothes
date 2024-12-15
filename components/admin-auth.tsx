@@ -21,6 +21,9 @@ export function AdminAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const auth = document.cookie.split('; ').find(row => row.startsWith('admin-auth='))?.split('=')[1];
+    console.log('Admin Auth Component - Cookie Auth:', auth);
+    console.log('Admin Auth Component - Expected:', process.env.NEXT_PUBLIC_ADMIN_PASSWORD);
+    
     if (auth === process.env.NEXT_PUBLIC_ADMIN_PASSWORD)  {
       setIsAuthenticated(true);
       setOpen(false);
@@ -29,8 +32,12 @@ export function AdminAuth({ children }: { children: React.ReactNode }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Admin Auth Component - Submitted Password:', password);
+    console.log('Admin Auth Component - Expected:', process.env.NEXT_PUBLIC_ADMIN_PASSWORD);
+    
     if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      document.cookie = `admin-auth=${password}; path=/; max-age=86400`; // 24 hours
+      // Set secure cookie with HttpOnly and SameSite attributes
+      document.cookie = `admin-auth=${password}; path=/; max-age=86400; SameSite=Strict; HttpOnly`;
       setIsAuthenticated(true);
       setOpen(false);
     } else {

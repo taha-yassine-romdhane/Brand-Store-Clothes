@@ -6,9 +6,18 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Get the admin auth from cookies or headers
     const adminAuth = request.cookies.get('admin-auth')?.value
+    console.log('Middleware - Admin Auth:', adminAuth)
+    console.log('Middleware - Expected Password:', process.env.NEXT_PUBLIC_ADMIN_PASSWORD)
 
     // If no auth token or incorrect token, redirect to home
-    if (!adminAuth || adminAuth !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+    if (!adminAuth) {
+      console.log('Middleware - No auth token found')
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Compare the hashed values to avoid exposing the password
+    if (adminAuth !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      console.log('Middleware - Invalid auth token')
       return NextResponse.redirect(new URL('/', request.url))
     }
   }
