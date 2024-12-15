@@ -1,8 +1,19 @@
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+
+// Initialize Prisma Client with the testing database URL
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: "postgresql://neondb_owner:opL64TCJjZDV@ep-red-block-a5iim96t.us-east-2.aws.neon.tech/testing?sslmode=require"
+    }
+  }
+})
 
 async function main() {
+  console.log('Starting database seed...')
+
   // First, clean up existing data
+  console.log('Cleaning existing data...')
   await prisma.productImage.deleteMany({})
   await prisma.product.deleteMany({})
 
@@ -54,6 +65,8 @@ async function main() {
     }
   ]
 
+  console.log('Creating products...')
+  
   for (const color of product1Colors) {
     const product = await prisma.product.create({
       data: {
@@ -63,20 +76,17 @@ async function main() {
         category: 'Suits',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
-        collaborateur: color.collaborateur
+        collaborateur: color.collaborateur,
+        images: {
+          create: color.images.map((image, index) => ({
+            url: `/images/${color.dir}/${image}`,
+            mimeType: 'image/jpeg',
+            isMain: index === 0
+          }))
+        }
       },
     })
-
-    // Add images for each color variant
-    for (const image of color.images) {
-      await prisma.productImage.create({
-        data: {
-          url: `/images/${color.dir}/${image}`,
-          isMain: image.includes('1.jpg'),
-          productId: product.id,
-        },
-      })
-    }
+    console.log(`Created product: ${product.name}`)
   }
 
   // Product 2 - Straight-cut Long Dress (Multiple Colors)
@@ -131,19 +141,17 @@ async function main() {
         category: 'Dresses',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
-        collaborateur: color.collaborateur
+        collaborateur: color.collaborateur,
+        images: {
+          create: color.images.map((image, index) => ({
+            url: `/images/${color.dir}/${image}`,
+            mimeType: 'image/jpeg',
+            isMain: index === 0
+          }))
+        }
       },
     })
-
-    for (const image of color.images) {
-      await prisma.productImage.create({
-        data: {
-          url: `/images/${color.dir}/${image}`,
-          isMain: image.includes('1'),
-          productId: product.id,
-        },
-      })
-    }
+    console.log(`Created product: ${product.name}`)
   }
 
   // Product 3 - Luxury Coat (Multiple Colors)
@@ -177,19 +185,17 @@ async function main() {
         category: 'Outerwear',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
-        collaborateur: color.collaborateur
+        collaborateur: color.collaborateur,
+        images: {
+          create: color.images.map((image, index) => ({
+            url: `/images/${color.dir}/${image}`,
+            mimeType: 'image/jpeg',
+            isMain: index === 0
+          }))
+        }
       },
     })
-
-    for (const image of color.images) {
-      await prisma.productImage.create({
-        data: {
-          url: `/images/${color.dir}/${image}`,
-          isMain: image.includes('1'),
-          productId: product.id,
-        },
-      })
-    }
+    console.log(`Created product: ${product.name}`)
   }
 
   // Product 4 - Business Formal Outfit
@@ -201,35 +207,49 @@ async function main() {
       category: 'Suits',
       colors: ['Black'],
       sizes: ['XS', 'S', 'M', 'L', 'XL'],
-      collaborateur: 'Aya'
+      collaborateur: 'Aya',
+      images: {
+        create: [
+          {
+            url: '/images/product4-Aya/Business formal outfit 1.jpg',
+            mimeType: 'image/jpeg',
+            isMain: true
+          },
+          {
+            url: '/images/product4-Aya/Business formal outfit  2.jpg',
+            mimeType: 'image/jpeg',
+            isMain: false
+          },
+          {
+            url: '/images/product4-Aya/Business formal outfit  3.jpg',
+            mimeType: 'image/jpeg',
+            isMain: false
+          },
+          {
+            url: '/images/product4-Aya/Business formal outfit 4 .jpg',
+            mimeType: 'image/jpeg',
+            isMain: false
+          }
+        ]
+      }
     },
   })
-
-  const product4Images = [
-    'Business formal outfit 1.jpg',
-    'Business formal outfit  2.jpg',
-    'Business formal outfit  3.jpg',
-    'Business formal outfit 4 .jpg'
-  ]
-
-  for (const image of product4Images) {
-    await prisma.productImage.create({
-      data: {
-        url: `/images/product4-Aya/${image}`,
-        isMain: image.includes('1'),
-        productId: product4.id,
-      },
-    })
-  }
+  console.log(`Created product: ${product4.name}`)
 
   // Product 5 - Short Sporty Coat (Multiple Colors)
   const product5Colors = [
     { 
       name: 'Pink',
-      images: ['Pink short sporty coat1.jpg']
+      dir: 'product5-pink-Aya',
+      collaborateur: 'Aya',
+      images: [
+        'Pink short sporty coat1.jpg'
+      ]
     },
     { 
       name: 'Greyish',
+      dir: 'product5-greysh-Aya',
+      collaborateur: 'Aya',
       images: [
         'greysh short sporty coat1 .jpg',
         'greysh short sporty coat2.jpg',
@@ -238,7 +258,11 @@ async function main() {
     },
     { 
       name: 'Sky Blue',
-      images: ['skybleu short sporty coat 1.jpg']
+      dir: 'product5-skyblue-Aya',
+      collaborateur: 'Aya',
+      images: [
+        'skybleu short sporty coat 1.jpg'
+      ]
     }
   ]
 
@@ -251,19 +275,17 @@ async function main() {
         category: 'Outerwear',
         colors: [color.name],
         sizes: ['XS', 'S', 'M', 'L', 'XL'],
-        collaborateur: 'Aya'
+        collaborateur: color.collaborateur,
+        images: {
+          create: color.images.map((image, index) => ({
+            url: `/images/${color.dir}/${image}`,
+            mimeType: 'image/jpeg',
+            isMain: index === 0
+          }))
+        }
       },
     })
-
-    for (const image of color.images) {
-      await prisma.productImage.create({
-        data: {
-          url: `/images/product5-Aya/${image}`,
-          isMain: true,
-          productId: product.id,
-        },
-      })
-    }
+    console.log(`Created product: ${product.name}`)
   }
 
   // Accessory
@@ -275,24 +297,26 @@ async function main() {
       category: 'Accessories',
       colors: ['Blue'],
       sizes: ['One Size'],
-      collaborateur: 'Emna'
+      collaborateur: 'Emna',
+      images: {
+        create: [
+          {
+            url: '/images/Accessoire1/neck-cover-blue.jpg',
+            mimeType: 'image/jpeg',
+            isMain: true
+          }
+        ]
+      }
     },
   })
-
-  await prisma.productImage.create({
-    data: {
-      url: '/images/Accessoire1/neck-cover-blue.jpg',
-      isMain: true,
-      productId: accessory.id,
-    },
-  })
+  console.log(`Created product: ${accessory.name}`)
 
   console.log('Database seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('Error seeding database:', e)
     process.exit(1)
   })
   .finally(async () => {

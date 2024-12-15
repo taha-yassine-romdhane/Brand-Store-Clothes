@@ -31,8 +31,9 @@ model Product {
 
 model ProductImage {
   id        Int      @id @default(autoincrement())
-  url       String   // Path to the image in public folder
-  isMain    Boolean  @default(false) // Indicates if this is the main product image
+  url       String   @db.Text // Base64 encoded image data
+  mimeType  String   // Image MIME type (e.g., image/jpeg, image/png)
+  isMain    Boolean  @default(false)
   productId Int
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())

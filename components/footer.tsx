@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "./admin-link";
 
 export function Footer() {
   return (
@@ -104,18 +105,16 @@ export function Footer() {
         <div className="border-t pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Trendy Threads. All rights reserved.
+              {new Date().getFullYear()} Trendy Threads. All rights reserved.
             </p>
             <div className="flex space-x-6">
               <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">
                 Terms of Service
               </Link>
-              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">
-                Privacy Policy
-              </Link>
               <Link href="/cookies" className="text-sm text-muted-foreground hover:text-primary">
                 Cookie Policy
               </Link>
+              <AdminLink />
             </div>
           </div>
         </div>

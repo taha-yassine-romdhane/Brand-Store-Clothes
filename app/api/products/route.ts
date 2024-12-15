@@ -1,6 +1,42 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    
+    // Create the product
+    const product = await prisma.product.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        price: parseFloat(data.price),
+        category: data.category.toLowerCase(),
+        colors: data.colors,
+        sizes: data.sizes,
+        collaborateur: data.collaborateur,
+        images: {
+          create: data.images.map((image: { url: string }) => ({
+            url: image.url,
+            mimeType: image.url.split(';')[0].split(':')[1], // Extract MIME type from data URL
+          }))
+        }
+      },
+      include: {
+        images: true
+      }
+    });
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
