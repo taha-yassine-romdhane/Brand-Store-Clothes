@@ -77,6 +77,7 @@ export default function NewProductPage() {
         imageFormData.append('images', image);
       });
 
+      console.log('Uploading images...');
       const uploadResponse = await fetch('/api/admin/upload', {
         method: 'POST',
         body: imageFormData,
@@ -87,6 +88,7 @@ export default function NewProductPage() {
       }
 
       const { images: uploadedImages } = await uploadResponse.json();
+      console.log('Uploaded images:', uploadedImages);
 
       // Then create product with image URLs
       const productData = {
@@ -97,9 +99,10 @@ export default function NewProductPage() {
         colors: formData.colors,
         sizes: formData.sizes,
         collaborateur: formData.collaborateur || undefined,
-        images: uploadedImages,
+        images: uploadedImages // Now this is an array of URL strings
       };
 
+      console.log('Creating product with data:', productData);
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: {

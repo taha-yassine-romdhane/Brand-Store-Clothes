@@ -65,7 +65,15 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = ['all', ...new Set(products.map(p => p.category))];
+  // Get unique categories
+  const uniqueCategories = products.reduce((acc: string[], product) => {
+    if (!acc.includes(product.category)) {
+      acc.push(product.category);
+    }
+    return acc;
+  }, []);
+
+  const categories = ['all', ...uniqueCategories];
 
   if (loading) {
     return (

@@ -16,23 +16,22 @@ datasource db {
 model Product {
   id            Int           @id @default(autoincrement())
   name          String
-  description   String
   price         Float
   salePrice     Float?
-  category      String
-  colors        String[]
   sizes         String[]
-  collaborateur String?
+  colors        String[]
+  category      String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  description   String
+  collaborateur String?
   images        ProductImage[]
   orderItems    OrderItem[]
 }
 
 model ProductImage {
   id        Int      @id @default(autoincrement())
-  url       String   @db.Text // Base64 encoded image data
-  mimeType  String   // Image MIME type (e.g., image/jpeg, image/png)
+  url       String   
   isMain    Boolean  @default(false)
   productId Int
   product   Product  @relation(fields: [productId], references: [id])

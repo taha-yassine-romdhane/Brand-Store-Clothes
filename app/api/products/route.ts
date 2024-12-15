@@ -4,29 +4,35 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+    console.log('Received product data:', JSON.stringify(data, null, 2));
     
     // Create the product
+    const productData = {
+      name: data.name,
+      description: data.description,
+      price: parseFloat(data.price),
+      category: data.category.toLowerCase(),
+      colors: data.colors,
+      sizes: data.sizes,
+      collaborateur: data.collaborateur,
+      images: {
+        create: data.images.map((imageUrl: string, index: number) => ({
+          url: imageUrl,
+          isMain: index === 0
+        }))
+      }
+    };
+
+    console.log('Processed product data:', JSON.stringify(productData, null, 2));
+
     const product = await prisma.product.create({
-      data: {
-        name: data.name,
-        description: data.description,
-        price: parseFloat(data.price),
-        category: data.category.toLowerCase(),
-        colors: data.colors,
-        sizes: data.sizes,
-        collaborateur: data.collaborateur,
-        images: {
-          create: data.images.map((image: { url: string }) => ({
-            url: image.url,
-            mimeType: image.url.split(';')[0].split(':')[1], // Extract MIME type from data URL
-          }))
-        }
-      },
+      data: productData,
       include: {
         images: true
       }
     });
 
+    console.log('Created product:', JSON.stringify(product, null, 2));
     return NextResponse.json(product);
   } catch (error) {
     console.error("Error creating product:", error);

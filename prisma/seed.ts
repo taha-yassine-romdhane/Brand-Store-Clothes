@@ -80,7 +80,6 @@ async function main() {
         images: {
           create: color.images.map((image, index) => ({
             url: `/images/${color.dir}/${image}`,
-            mimeType: 'image/jpeg',
             isMain: index === 0
           }))
         }
@@ -145,7 +144,6 @@ async function main() {
         images: {
           create: color.images.map((image, index) => ({
             url: `/images/${color.dir}/${image}`,
-            mimeType: 'image/jpeg',
             isMain: index === 0
           }))
         }
@@ -189,7 +187,6 @@ async function main() {
         images: {
           create: color.images.map((image, index) => ({
             url: `/images/${color.dir}/${image}`,
-            mimeType: 'image/jpeg',
             isMain: index === 0
           }))
         }
@@ -212,22 +209,18 @@ async function main() {
         create: [
           {
             url: '/images/product4-Aya/Business formal outfit 1.jpg',
-            mimeType: 'image/jpeg',
             isMain: true
           },
           {
             url: '/images/product4-Aya/Business formal outfit  2.jpg',
-            mimeType: 'image/jpeg',
             isMain: false
           },
           {
             url: '/images/product4-Aya/Business formal outfit  3.jpg',
-            mimeType: 'image/jpeg',
             isMain: false
           },
           {
             url: '/images/product4-Aya/Business formal outfit 4 .jpg',
-            mimeType: 'image/jpeg',
             isMain: false
           }
         ]
@@ -279,7 +272,6 @@ async function main() {
         images: {
           create: color.images.map((image, index) => ({
             url: `/images/${color.dir}/${image}`,
-            mimeType: 'image/jpeg',
             isMain: index === 0
           }))
         }
@@ -302,7 +294,6 @@ async function main() {
         create: [
           {
             url: '/images/Accessoire1/neck-cover-blue.jpg',
-            mimeType: 'image/jpeg',
             isMain: true
           }
         ]
