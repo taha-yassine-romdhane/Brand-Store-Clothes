@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+
 export function AdminAuth({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -19,8 +20,8 @@ export function AdminAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const auth = sessionStorage.getItem("admin-auth");
-    if (auth === "22984695") {
+    const auth = document.cookie.split('; ').find(row => row.startsWith('admin-auth='))?.split('=')[1];
+    if (auth === process.env.NEXT_PUBLIC_ADMIN_PASSWORD)  {
       setIsAuthenticated(true);
       setOpen(false);
     }
@@ -28,8 +29,8 @@ export function AdminAuth({ children }: { children: React.ReactNode }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "22984695") {
-      sessionStorage.setItem("admin-auth", password);
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      document.cookie = `admin-auth=${password}; path=/; max-age=86400`; // 24 hours
       setIsAuthenticated(true);
       setOpen(false);
     } else {

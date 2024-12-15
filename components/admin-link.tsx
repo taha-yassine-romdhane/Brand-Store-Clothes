@@ -19,8 +19,8 @@ export function AdminLink() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "22984695") {
-      sessionStorage.setItem("admin-auth", password);
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      document.cookie = `admin-auth=${password}; path=/; max-age=86400`; // 24 hours
       setPassword("");
       router.push("/admin");
     } else {
