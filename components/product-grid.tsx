@@ -266,15 +266,15 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                 {product.salePrice ? (
                   <>
                     <span className="text-sm font-medium text-red-600">
-                      {formatPrice(product.salePrice)}
+                      {formatPrice(product.salePrice)}TND
                     </span>
                     <span className="text-sm text-gray-500 line-through">
-                      {formatPrice(product.price)}
+                      {formatPrice(product.price)} TND
                     </span>
                   </>
                 ) : (
                   <span className="text-sm font-medium text-gray-900">
-                    {formatPrice(product.price)}
+                    {formatPrice(product.price)} TND
                   </span>
                 )}
               </div>
