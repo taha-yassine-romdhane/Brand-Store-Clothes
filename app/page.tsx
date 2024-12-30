@@ -38,7 +38,7 @@ export default async function Home() {
       {/* Hero Section */}
       <div className="relative h-[60vh]">
         <Image
-          src="/images/autres/3R8A1646.jpg"
+          src="/wallpaper.jpg"
           alt="Hero Image"
           fill
           className="object-cover"

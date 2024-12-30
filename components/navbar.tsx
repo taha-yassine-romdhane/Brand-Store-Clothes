@@ -9,6 +9,7 @@ import { useCart } from "@/lib/context/cart-context";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 interface Subcategory {
   name: string;
@@ -219,7 +220,13 @@ const Navbar = () => {
       <Container>
         <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
           <Link href="/" className="ml-4 flex lg:ml-0 gap-x-2">
-            <p className="font-bold text-xl">LAMASETTE</p>
+            <Image 
+              src="/site.png"
+              alt="Site Logo"
+              width={130}
+              height={130}
+              className="object-contain"
+            />
           </Link>
 
           <div className="flex items-center gap-x-4">
