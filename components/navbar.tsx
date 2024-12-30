@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
@@ -82,6 +82,7 @@ const Navbar = () => {
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -230,6 +231,18 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center gap-x-4">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-full"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+
             <div className="hidden lg:flex items-center gap-x-4">
               {routes.map((route) => (
                 <div key={route.href} className="relative group">
@@ -404,6 +417,86 @@ const Navbar = () => {
           </div>
         </div>
       </Container>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 bg-white z-50 overflow-y-auto">
+          <div className="px-4 py-4">
+            {/* Mobile Header */}
+            <div className="flex items-center justify-between mb-6">
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                <Image 
+                  src="/site.png"
+                  alt="Site Logo"
+                  width={100}
+                  height={100}
+                  className="object-contain"
+                />
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Mobile Search */}
+            <form onSubmit={handleSearch} role="search" className="mb-6">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  className="w-full bg-gray-100 rounded-full px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-colors"
+                />
+                <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              </div>
+            </form>
+
+            {/* Mobile Navigation Links */}
+            <nav className="space-y-6">
+              {routes.map((route) => (
+                <div key={route.href}>
+                  <Link
+                    href={route.href}
+                    className="block text-lg font-medium py-2 hover:text-gray-600 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {route.label}
+                  </Link>
+                  {route.dropdown && (
+                    <div className="pl-4 mt-2 space-y-3">
+                      {collectionCategories.map((category) => (
+                        <div key={category.label} className="mb-4">
+                          <h3 className="font-medium text-sm mb-2 text-gray-900">{category.label}</h3>
+                          <div className="space-y-2">
+                            {category.subcategories.map((subcategory) => (
+                              <Link
+                                key={subcategory.name}
+                                href={subcategory.href || `/collections?category=${category.label.toLowerCase()}&product=${subcategory.query}`}
+                                className="block text-sm text-gray-600 py-1.5 pl-2 hover:text-black transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                {subcategory.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
       {isSearching && (
         <div className="fixed inset-0 z-50 bg-white px-4 py-6">
           <form onSubmit={handleSearch} role="search">
